@@ -167,6 +167,67 @@
     letter-spacing: 0.05em;
   }
 
+  /* ---- MOBILE BAR ---- */
+  .mobile-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    padding: 0 1.25rem;
+    background: var(--charcoal);
+    color: #fff;
+    z-index: 1000;
+  }
+
+  .mobile-brand {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .mobile-brand span { color: var(--coral); }
+
+  .mobile-menu-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .mobile-menu-toggle .bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 999px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+
+  .mobile-menu-toggle .bar + .bar { margin-top: 5px; }
+
+  body.nav-open .mobile-menu-toggle .bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  body.nav-open .mobile-menu-toggle .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  body.nav-open .mobile-menu-toggle .bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
   /* ---- MAIN ---- */
   main {
     margin-left: 260px;
@@ -672,21 +733,34 @@
 
   /* ---- MOBILE ---- */
   @media (max-width: 900px) {
+    .mobile-bar { display: flex; }
+
     nav {
-      position: relative;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: auto;
-      padding: 1.5rem;
+      height: 100vh;
+      padding: calc(56px + 1.5rem) 1.5rem 1.5rem;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      z-index: 900;
     }
+
+    body.nav-open nav { transform: translateY(0); }
 
     nav .nav-footer { display: none; }
 
-    main { margin-left: 0; }
+    main {
+      margin-left: 0;
+      padding-top: 56px;
+    }
 
     .hero { padding: 3rem 1.5rem; }
     .hero h1 { font-size: 2rem; }
 
     section { padding: 2.5rem 1.5rem; }
+    section { scroll-margin-top: 72px; }
 
     .color-grid { grid-template-columns: repeat(3, 1fr); }
     .voice-grid, .toolkit-grid, .platform-grid { grid-template-columns: 1fr; }
@@ -710,7 +784,16 @@
   <div class="gate-error" id="gate-error">Incorrect password</div>
 </div>
 
-<nav>
+<div class="mobile-bar" id="mobile-bar">
+  <div class="mobile-brand">Thursday Thoughts<span>.</span></div>
+  <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="site-nav">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+</div>
+
+<nav id="site-nav">
   <div class="brand">Thursday Thoughts<span>.</span></div>
   <div class="subtitle">Brand Kit</div>
 
@@ -1229,6 +1312,23 @@
   // Active nav tracking
   const sections = document.querySelectorAll('section');
   const navLinks = document.querySelectorAll('nav a');
+  const menuToggle = document.getElementById('mobile-menu-toggle');
+
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = document.body.classList.toggle('nav-open');
+      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (document.body.classList.contains('nav-open')) {
+        document.body.classList.remove('nav-open');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
