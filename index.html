@@ -7,6 +7,55 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
+  /* ---- PASSWORD GATE ---- */
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #1A1A1A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+  .gate.hidden { display: none; }
+  .gate h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    color: #fff;
+    font-size: 1.6rem;
+    margin-bottom: 0.25rem;
+  }
+  .gate h1 span { color: #FF5E7E; }
+  .gate p { color: #A0968C; font-size: 0.85rem; margin-bottom: 1.5rem; }
+  .gate-form { display: flex; gap: 0.5rem; }
+  .gate-form input {
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+    width: 220px;
+  }
+  .gate-form input:focus { border-color: #FF5E7E; }
+  .gate-form button {
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    background: #FF5E7E;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .gate-form button:hover { opacity: 0.85; }
+  .gate-error { color: #FF5E7E; font-size: 0.8rem; margin-top: 0.75rem; opacity: 0; transition: opacity 0.3s; }
+  .gate-error.show { opacity: 1; }
+  body.locked { overflow: hidden; }
+
   :root {
     --coral: #FF5E7E;
     --coral-light: rgba(255, 94, 126, 0.08);
@@ -649,7 +698,17 @@
   }
 </style>
 </head>
-<body>
+<body class="locked">
+
+<div class="gate" id="gate">
+  <h1>Thursday Thoughts<span>.</span></h1>
+  <p>Brand Kit — Private Access</p>
+  <div class="gate-form">
+    <input type="password" id="gate-pw" placeholder="Enter password" autofocus>
+    <button onclick="checkGate()">Enter</button>
+  </div>
+  <div class="gate-error" id="gate-error">Incorrect password</div>
+</div>
 
 <nav>
   <div class="brand">Thursday Thoughts<span>.</span></div>
@@ -1132,6 +1191,31 @@
 <div class="copied-toast" id="toast">Copied!</div>
 
 <script>
+  // Password gate — hash-based so password isn't in source
+  const HASH = '15cbfab2cca18f28ee61e8a8c28b11cbadcbd1cc93f528d2f9e48e4000500004'; // sha256
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  async function checkGate() {
+    const pw = document.getElementById('gate-pw').value;
+    const hash = await sha256(pw);
+    if (hash === HASH) {
+      document.getElementById('gate').classList.add('hidden');
+      document.body.classList.remove('locked');
+      sessionStorage.setItem('tt-auth', '1');
+    } else {
+      document.getElementById('gate-error').classList.add('show');
+      setTimeout(() => document.getElementById('gate-error').classList.remove('show'), 2000);
+    }
+  }
+  document.getElementById('gate-pw').addEventListener('keydown', e => { if (e.key === 'Enter') checkGate(); });
+  // Auto-unlock if already authenticated this session
+  if (sessionStorage.getItem('tt-auth') === '1') {
+    document.getElementById('gate').classList.add('hidden');
+    document.body.classList.remove('locked');
+  }
+
   // Click-to-copy hex colors
   function copyColor(hex, el) {
     navigator.clipboard.writeText(hex).then(() => {
