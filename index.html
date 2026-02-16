@@ -200,8 +200,10 @@
     width: 32px;
     height: 32px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 5px;
     cursor: pointer;
   }
 
@@ -214,7 +216,7 @@
     transition: transform 0.25s ease, opacity 0.2s ease;
   }
 
-  .mobile-menu-toggle .bar + .bar { margin-top: 5px; }
+  .mobile-menu-toggle .bar + .bar { margin-top: 0; }
 
   body.nav-open .mobile-menu-toggle .bar:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
