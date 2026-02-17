@@ -1886,7 +1886,7 @@ is creative, metaphorical, and joyful.</code></pre>
     function drawQuoteText(text) {
       const padding = 120;
       const fontSize = 48;
-      const lineHeight = Math.round(fontSize * 1.45);
+      const lineHeight = Math.round(fontSize * 1.25);
       const maxWidth = canvasSize - padding * 2;
 
       // Use AmericanTypewriter (iOS/macOS system font name variants)
@@ -1911,7 +1911,7 @@ is creative, metaphorical, and joyful.</code></pre>
       // ── Quote mark (big coral curly quotes) ──
       ctx.save();
       ctx.fillStyle = colors.coral;
-      ctx.font = `bold 140px ${fontFamily}`;
+      ctx.font = `bold 180px ${fontFamily}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
       ctx.fillText('\u201C', canvasSize / 2, blockTop + quoteMarkSize);
@@ -1961,7 +1961,7 @@ is creative, metaphorical, and joyful.</code></pre>
       ctx.stroke();
 
       ctx.fillStyle = '#8a8078';
-      ctx.font = '22px "Inter", sans-serif';
+      ctx.font = '22px "Roboto Slab", serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillText('Thursday Thoughts on AI', canvasSize / 2, dividerY + 16);
@@ -1990,7 +1990,8 @@ is creative, metaphorical, and joyful.</code></pre>
 
     const fontReady = document.fonts
       ? Promise.all([
-        document.fonts.load('20px "Inter"')
+        document.fonts.load('20px "Inter"'),
+        document.fonts.load('22px "Roboto Slab"')
       ])
       : Promise.resolve();
 
