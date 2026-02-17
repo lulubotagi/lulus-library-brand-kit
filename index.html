@@ -1879,18 +1879,19 @@ is creative, metaphorical, and joyful.</code></pre>
 
     function drawQuoteText(text) {
       const padding = 140;
-      const fontSize = 42;
-      const lineHeight = Math.round(fontSize * 1.35);
+      const fontSize = 36;
+      const lineHeight = Math.round(fontSize * 1.5);
       const maxWidth = canvasSize - padding * 2;
       const quoteMarkHeight = 100;
+
+      // Set font BEFORE measuring for wrap
+      ctx.font = `${fontSize}px "Special Elite", serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
 
       const words = parseHighlightedWords(text);
       const { lines, spaceWidth } = wrapLines(words, maxWidth, fontSize);
       const textHeight = lines.length * lineHeight;
-
-      ctx.font = `${fontSize}px "Special Elite", serif`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'alphabetic';
 
       const totalHeight = quoteMarkHeight + textHeight;
       const firstBaseline = Math.max(200 + quoteMarkHeight + fontSize, (canvasSize * 0.48) - totalHeight / 2 + quoteMarkHeight + fontSize);
@@ -1964,7 +1965,7 @@ is creative, metaphorical, and joyful.</code></pre>
     const fontReady = document.fonts
       ? Promise.all([
         document.fonts.load('120px "Special Elite"'),
-        document.fonts.load('48px "Special Elite"'),
+        document.fonts.load('36px "Special Elite"'),
         document.fonts.load('20px "Inter"')
       ])
       : Promise.resolve();
