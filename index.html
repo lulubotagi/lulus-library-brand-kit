@@ -1871,15 +1871,15 @@ is creative, metaphorical, and joyful.</code></pre>
 
     function drawQuoteText(text) {
       const padding = 140;
-      const fontSize = 36;
-      const lineHeight = Math.round(fontSize * 1.5);
+      const fontSize = 46;
+      const lineHeight = Math.round(fontSize * 1.35);
       const maxWidth = canvasSize - padding * 2;
       const quoteMarkHeight = 100;
 
       const fontFamily = '"American Typewriter", "Courier New", serif';
 
       // Set quote body font BEFORE measuring for wrap
-      ctx.font = `${fontSize}px ${fontFamily}`;
+      ctx.font = `bold ${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
 
@@ -1900,7 +1900,7 @@ is creative, metaphorical, and joyful.</code></pre>
       ctx.restore();
 
       // Restore body font after quote mark
-      ctx.font = `${fontSize}px ${fontFamily}`;
+      ctx.font = `bold ${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
 
