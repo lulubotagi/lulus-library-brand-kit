@@ -878,9 +878,128 @@
 
   .quote-btn:hover { transform: translateY(-1px); }
 
+  /* ---- CAROUSEL GENERATOR ---- */
+  .carousel-generator {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin: 1.5rem 0 2rem;
+  }
+
+  .carousel-controls {
+    flex: 1;
+    min-width: 280px;
+    background: rgba(38, 70, 83, 0.04);
+    border: 1px solid rgba(38, 70, 83, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .carousel-controls textarea {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(38, 70, 83, 0.2);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+  }
+
+  .carousel-controls textarea:focus { border-color: var(--coral); }
+
+  .carousel-buttons,
+  .carousel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .carousel-btn {
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+
+  .carousel-btn-primary {
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 16px rgba(255, 94, 126, 0.25);
+  }
+
+  .carousel-btn-secondary {
+    background: transparent;
+    color: var(--coral);
+    border: 1.5px solid var(--coral);
+  }
+
+  .carousel-btn:hover { transform: translateY(-1px); }
+
+  .carousel-status {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+  }
+
+  .carousel-preview {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .carousel-main-canvas {
+    width: 100%;
+    max-width: 540px;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 12px 24px rgba(38, 70, 83, 0.12);
+    background: #F5F0E8;
+    display: block;
+    align-self: center;
+  }
+
+  .carousel-thumbs {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .carousel-thumb {
+    border: 1px solid rgba(38, 70, 83, 0.2);
+    background: #fff;
+    border-radius: 12px;
+    padding: 0.35rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .carousel-thumb.active {
+    border-color: var(--coral);
+    box-shadow: 0 8px 18px rgba(255, 94, 126, 0.2);
+  }
+
+  .carousel-thumb canvas {
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+  }
+
   @media (max-width: 900px) {
     .quote-generator { flex-direction: column; }
     .quote-controls { width: 100%; }
+    .carousel-generator { flex-direction: column; }
+    .carousel-controls, .carousel-preview { width: 100%; }
   }
 
   /* ---- CONTENT STRUCTURE ---- */
@@ -1112,6 +1231,7 @@
   <a href="#image-styles">Image Styles</a>
   <a href="#annotation">Annotation Kit</a>
   <a href="#quotable">Quote Cards</a>
+  <a href="#carousel">Carousel Generator</a>
 
   <div class="nav-section">Content</div>
   <a href="#structure">Post Structure</a>
@@ -1519,9 +1639,35 @@ is creative, metaphorical, and joyful.</code></pre>
     </ul>
   </section>
 
+  <!-- CAROUSEL GENERATOR -->
+  <section id="carousel">
+    <div class="section-label">11 — Carousel Generator</div>
+    <h2>Carousel Generator</h2>
+    <p>Paste slide JSON to generate a full carousel deck with Thursday Thoughts styling.</p>
+
+    <div class="carousel-generator">
+      <div class="carousel-controls">
+        <textarea id="carousel-input" placeholder="Paste carousel JSON here..."></textarea>
+        <div class="carousel-buttons">
+          <button class="carousel-btn carousel-btn-secondary" id="carousel-load" type="button">Load Sample</button>
+          <button class="carousel-btn carousel-btn-primary" id="carousel-generate" type="button">Generate Slides</button>
+        </div>
+        <div class="carousel-status" id="carousel-status">Awaiting JSON input.</div>
+      </div>
+      <div class="carousel-preview">
+        <canvas class="carousel-main-canvas" id="carousel-main" width="1080" height="1080" aria-label="Carousel slide preview"></canvas>
+        <div class="carousel-actions">
+          <button class="carousel-btn carousel-btn-primary" id="carousel-download-zip" type="button">Download All PNGs</button>
+          <button class="carousel-btn carousel-btn-secondary" id="carousel-download-pdf" type="button">Download PDF</button>
+        </div>
+        <div class="carousel-thumbs" id="carousel-thumbs" aria-label="Carousel slide thumbnails"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- STRUCTURE -->
   <section id="structure">
-    <div class="section-label">11 — Content Architecture</div>
+    <div class="section-label">12 — Content Architecture</div>
     <h2>Newsletter Post Structure</h2>
     <div class="structure-flow">
       <div class="structure-step">
@@ -1567,7 +1713,7 @@ is creative, metaphorical, and joyful.</code></pre>
 
   <!-- PILLARS -->
   <section id="pillars">
-    <div class="section-label">12 — Content Pillars</div>
+    <div class="section-label">13 — Content Pillars</div>
     <h2>What Thursday Thoughts Covers</h2>
     <div class="beliefs-grid">
       <div class="belief-card">
@@ -1600,7 +1746,7 @@ is creative, metaphorical, and joyful.</code></pre>
 
   <!-- TOOLKIT -->
   <section id="toolkit">
-    <div class="section-label">13 — Toolkit</div>
+    <div class="section-label">14 — Toolkit</div>
     <h2>Brand Tools</h2>
     <div class="toolkit-grid">
       <div class="tool-card live">
@@ -1628,7 +1774,7 @@ is creative, metaphorical, and joyful.</code></pre>
 
   <!-- LINKS -->
   <section id="links">
-    <div class="section-label">14 — Key Links</div>
+    <div class="section-label">15 — Key Links</div>
     <h2>Find Thursday Thoughts</h2>
     <div class="links-grid">
       <a href="https://blog.jaclynkonzelmann.com" target="_blank" class="link-pill">
@@ -1656,7 +1802,7 @@ is creative, metaphorical, and joyful.</code></pre>
 
   <!-- VISUAL DO/DONTS -->
   <section id="visual-rules">
-    <div class="section-label">15 — Visual Do's & Don'ts</div>
+    <div class="section-label">16 — Visual Do's & Don'ts</div>
     <h2>Visual Do's & Don'ts</h2>
     <p>Quick reference for visual execution across typography, canvas, and imagery styles.</p>
     <table class="do-dont-table">
@@ -1714,6 +1860,10 @@ is creative, metaphorical, and joyful.</code></pre>
 </main>
 
 <div class="copied-toast" id="toast">Copied!</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <script>
   // Password gate — hash-based so password isn't in source
@@ -1784,6 +1934,22 @@ is creative, metaphorical, and joyful.</code></pre>
 
   sections.forEach(section => observer.observe(section));
 
+  // Shared texture preload
+  const textureImg = new Image();
+  textureImg.src = 'cardstock_texture.png';
+  let textureLoaded = false;
+  const textureReady = new Promise(resolve => {
+    if (textureImg.complete) {
+      textureLoaded = true;
+      resolve();
+      return;
+    }
+    textureImg.onload = () => {
+      textureLoaded = true;
+      resolve();
+    };
+  });
+
   // Quote card generator
   const quoteCanvas = document.getElementById('quote-canvas');
   const quoteInput = document.getElementById('quote-input');
@@ -1835,33 +2001,34 @@ is creative, metaphorical, and joyful.</code></pre>
       return words;
     }
 
-    function wrapLines(words, maxWidth, fontSize) {
+    function wrapLines(paragraphs, maxWidth, ctx) {
       const lines = [];
       const spaceWidth = ctx.measureText(' ').width;
-      let current = [];
-      let currentWidth = 0;
-
-      words.forEach(word => {
-        const wordWidth = ctx.measureText(word.text).width;
-        const nextWidth = currentWidth + (current.length ? spaceWidth : 0) + wordWidth;
-        if (nextWidth > maxWidth && current.length) {
-          lines.push({ words: current, width: currentWidth });
-          current = [];
-          currentWidth = 0;
+      paragraphs.forEach(words => {
+        if (!words.length) {
+          lines.push({ words: [], width: 0 });
+          return;
         }
-        current.push({ ...word, width: wordWidth });
-        currentWidth += (current.length > 1 ? spaceWidth : 0) + wordWidth;
+
+        let current = [];
+        let currentWidth = 0;
+        words.forEach(word => {
+          const wordWidth = ctx.measureText(word.text).width;
+          const nextWidth = currentWidth + (current.length ? spaceWidth : 0) + wordWidth;
+          if (nextWidth > maxWidth && current.length) {
+            lines.push({ words: current, width: currentWidth });
+            current = [];
+            currentWidth = 0;
+          }
+          current.push({ ...word, width: wordWidth });
+          currentWidth += (current.length > 1 ? spaceWidth : 0) + wordWidth;
+        });
+
+        if (current.length) lines.push({ words: current, width: currentWidth });
       });
 
-      if (current.length) lines.push({ words: current, width: currentWidth });
-      return { lines, spaceWidth, fontSize };
+      return { lines, spaceWidth };
     }
-
-    // ── Preload cardstock texture ──
-    const textureImg = new Image();
-    textureImg.src = 'cardstock_texture.png';
-    let textureLoaded = false;
-    textureImg.onload = () => { textureLoaded = true; };
 
     // ── Exact Python quotable.py values ──
     const S = canvasSize; // 1080
@@ -1873,7 +2040,8 @@ is creative, metaphorical, and joyful.</code></pre>
     const brandFontSize = Math.round(S * 0.02);  // 22
     const fontFamily = '"Special Elite", serif';
 
-    function drawQuoteText(text) {
+    function renderQuoteCard(canvas, text) {
+      const ctx = canvas.getContext('2d');
       // Background: texture or solid
       if (textureLoaded) {
         ctx.drawImage(textureImg, 0, 0, S, S);
@@ -1887,8 +2055,8 @@ is creative, metaphorical, and joyful.</code></pre>
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';  // PIL uses top baseline
 
-      const words = parseHighlightedWords(text);
-      const { lines, spaceWidth } = wrapLines(words, maxTextWidth, fontSize);
+      const paragraphs = text.split(/\n/).map(line => parseHighlightedWords(line));
+      const { lines } = wrapLines(paragraphs, maxTextWidth, ctx);
       const textBlockHeight = lines.length * lineHeight;
 
       // Vertical center (Python: start_y = (size - block) // 2 - size*0.03)
@@ -1909,6 +2077,7 @@ is creative, metaphorical, and joyful.</code></pre>
 
       lines.forEach((line, i) => {
         const ly = startY + i * lineHeight;
+        if (!line.words.length) return;
         const lineText = line.words.map(w => w.text).join(' ');
         const lineW = ctx.measureText(lineText).width;
         const lineX = S / 2 - lineW / 2;
@@ -1959,9 +2128,11 @@ is creative, metaphorical, and joyful.</code></pre>
       ctx.stroke();
     }
 
+    window.renderQuoteCard = renderQuoteCard;
+
     function renderQuote(text) {
       const safeText = text && text.trim() ? text : defaultQuote;
-      drawQuoteText(safeText);
+      renderQuoteCard(quoteCanvas, safeText);
     }
 
     let debounceId;
@@ -1988,12 +2159,338 @@ is creative, metaphorical, and joyful.</code></pre>
       ])
       : Promise.resolve();
 
-    const textureReady = new Promise(resolve => {
-      if (textureImg.complete) resolve();
-      else { textureImg.onload = () => { textureLoaded = true; resolve(); }; }
+    Promise.all([fontReady, textureReady]).then(() => renderQuote(defaultQuote));
+  }
+
+  // ═══════════════════════════════════════
+  // CAROUSEL GENERATOR
+  // ═══════════════════════════════════════
+  {
+    const CS = 1080;
+    const M = 80;
+    const FOOTER_H = 86;
+    const CW = CS - M * 2;
+    const CH = CS - M - FOOTER_H;
+
+    const CHARCOAL = '#264653';
+    const CORAL = '#FF5E7E';
+    const INK = 'rgb(45,42,40)';
+    const INK_SEC = 'rgb(80,75,70)';
+    const DARK_TXT = 'rgb(250,249,246)';
+    const DARK_SEC = 'rgb(200,198,195)';
+    const FOOTER_LT = 'rgb(160,150,140)';
+    const FOOTER_DK = 'rgb(180,175,170)';
+
+    const sampleJSON = `{
+  "slides": [
+    {"style":"hook","intro":"3-day weekend. One AI agent.","headline":["Here's what"],"headline_accent":["happened."],"show_arrow":true},
+    {"style":"statement_stats","label":"COLORING BOOK","headline":["From illustrations to","cover design to KDP","formatting — all built","over the weekend."],"accent":"That's wild to me.","stats":[{"value":"50","label":"Coloring Pages"},{"value":"1","label":"KDP Submission"},{"value":"1","label":"iPad Flipbook"}]},
+    {"style":"body","label":"CANADA TRIP PLANNER","headline":["Interactive map with","watercolor portraits","of everyone."],"body":["Leaflet.js, custom tiles,","family avatar pins that","link to each stop."]},
+    {"style":"body","label":"WEEKNIGHT DINNERS","headline":["Smart grocery list —","pick meals, it parses","ingredients, scales","for your family."],"body":["One tap to copy and go."]},
+    {"style":"body","label":"BRAND IDENTITY","headline":["Colors, typography,","voice, image styles —","all in one place."],"body":["So I can automate the","monotonous stuff: asset","generation, cropping, drop","shadows — all the repetitive","visual work."]},
+    {"style":"bullet_list","intro":["Oh — and the kids and I also","had a great weekend."],"items":["Grandparents visited","Multiple playgrounds","Organized the bedroom","Cooked new recipes"],"closing":["It's amazing what you","can get done when an"],"closing_accent":["AI is working behind","the scenes."]},
+    {"style":"pull_quote","quote":"The cost of building is\\ntrending to [zero].\\nThis weekend I felt it."}
+  ]
+}`;
+
+    const carouselInput = document.getElementById('carousel-input');
+    const carouselMain = document.getElementById('carousel-main');
+    const carouselThumbs = document.getElementById('carousel-thumbs');
+    const carouselStatus = document.getElementById('carousel-status');
+    let slideCanvases = [];
+
+    document.getElementById('carousel-load').addEventListener('click', () => {
+      carouselInput.value = sampleJSON;
+      carouselStatus.textContent = 'Sample loaded. Click Generate Slides.';
     });
 
-    Promise.all([fontReady, textureReady]).then(() => renderQuote(defaultQuote));
+    function drawLightBg(ctx) {
+      if (textureLoaded) { ctx.drawImage(textureImg, 0, 0, CS, CS); }
+      else { ctx.fillStyle = '#FAF9F6'; ctx.fillRect(0, 0, CS, CS); }
+    }
+
+    function drawDarkBg(ctx) {
+      ctx.fillStyle = CHARCOAL;
+      ctx.fillRect(0, 0, CS, CS);
+      if (textureLoaded) { ctx.globalAlpha = 0.08; ctx.drawImage(textureImg, 0, 0, CS, CS); ctx.globalAlpha = 1.0; }
+    }
+
+    function drawFooter(ctx, dark) {
+      const yLine = CS - 86;
+      ctx.strokeStyle = CORAL; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(CS/2 - 60, yLine); ctx.lineTo(CS/2 + 60, yLine); ctx.stroke();
+      ctx.font = '22px "Roboto Slab", serif';
+      ctx.fillStyle = dark ? FOOTER_DK : FOOTER_LT;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText('Thursday Thoughts on AI', CS/2, yLine + 16);
+      ctx.textAlign = 'left';
+    }
+
+    function drawLeftLines(ctx, lines, x, y, gap, font, fill) {
+      ctx.font = font; ctx.fillStyle = fill; ctx.textBaseline = 'top';
+      lines.forEach(line => { ctx.fillText(line, x, y); y += gap; });
+      return y;
+    }
+
+    function tw(ctx, text) { return ctx.measureText(text).width; }
+
+    function renderHook(ctx, s) {
+      drawDarkBg(ctx);
+      const intro = s.intro || '';
+      const hl = s.headline || [];
+      const ha = s.headline_accent || [];
+      const introH = intro ? 40 : 0;
+      const blockH = introH + (introH ? 30 : 0) + (hl.length + ha.length) * 88;
+      let y = M + (CH - blockH) / 2;
+      if (intro) {
+        ctx.font = '30px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.textBaseline = 'top';
+        ctx.fillText(intro, M, y); y += 40 + 30;
+      }
+      y = drawLeftLines(ctx, hl, M, y, 88, '72px "Roboto Slab", serif', DARK_TXT);
+      drawLeftLines(ctx, ha, M, y, 88, '72px "Roboto Slab", serif', CORAL);
+      if (s.show_arrow) {
+        ctx.font = '44px "Inter", sans-serif'; ctx.fillStyle = CORAL;
+        ctx.fillText('→', CS - 120, CS - 140);
+      }
+      drawFooter(ctx, true);
+    }
+
+    function renderStatementStats(ctx, s) {
+      drawLightBg(ctx);
+      const label = (s.label || '').toUpperCase();
+      const hl = s.headline || [];
+      const accent = s.accent || '';
+      const stats = s.stats || [];
+
+      ctx.font = '22px "Inter", sans-serif'; ctx.textBaseline = 'top';
+      const labelH = label ? 30 : 0;
+      if (label) { ctx.fillStyle = CORAL; ctx.fillText(label, M, M); }
+
+      const topAfterLabel = M + labelH + 20;
+      const statsZoneH = stats.length ? 110 : 0;
+      const bottomBeforeStats = CS - FOOTER_H - statsZoneH - 30 - 20;
+      const hlH = hl.length * 64;
+      const accentH = accent ? 56 : 0;
+      const contentH = hlH + accentH;
+      let y = topAfterLabel + (bottomBeforeStats - topAfterLabel - contentH) / 2;
+
+      y = drawLeftLines(ctx, hl, M, y, 64, '52px "Roboto Slab", serif', INK);
+      if (accent) { y += 16; ctx.font = '40px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.fillText(accent, M, y); }
+
+      if (stats.length) {
+        const statsTop = CS - FOOTER_H - statsZoneH - 30;
+        ctx.strokeStyle = 'rgba(45,42,40,0.15)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(M, statsTop - 8); ctx.lineTo(CS - M, statsTop - 8); ctx.stroke();
+
+        const colW = 220;
+        const clusterW = colW * stats.length;
+        const clusterX = (CS - clusterW) / 2;
+        ctx.font = '46px "Roboto Slab", serif';
+        const sampleH = 46;
+        const numY = statsTop + 8;
+        const labelY = numY + sampleH + 24;
+
+        stats.forEach((stat, i) => {
+          const colCenter = clusterX + colW * (i + 0.5);
+          ctx.font = '46px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.textAlign = 'center';
+          ctx.fillText(stat.value, colCenter, numY);
+          ctx.font = '17px "Inter", sans-serif'; ctx.fillStyle = INK_SEC;
+          ctx.fillText(stat.label, colCenter, labelY);
+          ctx.textAlign = 'left';
+          if (i < stats.length - 1) {
+            const xDiv = clusterX + colW * (i + 1);
+            ctx.strokeStyle = 'rgba(45,42,40,0.2)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(xDiv, numY); ctx.lineTo(xDiv, labelY + 20); ctx.stroke();
+          }
+        });
+      }
+      drawFooter(ctx, false);
+    }
+
+    function renderBody(ctx, s) {
+      drawLightBg(ctx);
+      const label = (s.label || '').toUpperCase();
+      const hl = s.headline || [];
+      const body = s.body || [];
+
+      ctx.textBaseline = 'top';
+      const labelH = label ? 30 : 0;
+      if (label) { ctx.font = '22px "Inter", sans-serif'; ctx.fillStyle = CORAL; ctx.fillText(label, M, M); }
+
+      const hlH = hl.length * 64;
+      const bodyH = body.length * 44;
+      const blockH = hlH + 30 + bodyH;
+      const topAfterLabel = M + labelH + 20;
+      const availH = CS - FOOTER_H - topAfterLabel;
+      let y = topAfterLabel + (availH - blockH) / 2;
+
+      y = drawLeftLines(ctx, hl, M, y, 64, '52px "Roboto Slab", serif', INK);
+      y += 30;
+      drawLeftLines(ctx, body, M, y, 44, '32px "Inter", sans-serif', INK_SEC);
+      drawFooter(ctx, false);
+    }
+
+    function renderBulletList(ctx, s) {
+      drawDarkBg(ctx);
+      const intro = s.intro || [];
+      const items = s.items || [];
+      const closing = s.closing || [];
+      const closingAccent = s.closing_accent || [];
+
+      const introH = intro.length * 44;
+      const itemsH = items.length * 48;
+      const closingH = (closing.length + closingAccent.length) * 62;
+      const blockH = introH + 30 + itemsH + 40 + closingH;
+      let y = M + (CH - blockH) / 2;
+
+      y = drawLeftLines(ctx, intro, M, y, 44, '32px "Inter", sans-serif', DARK_TXT);
+      y += 30;
+      ctx.font = '30px "Inter", sans-serif'; ctx.textBaseline = 'top';
+      items.forEach(item => {
+        ctx.fillStyle = CORAL;
+        ctx.beginPath(); ctx.arc(M + 6, y + 18, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = DARK_SEC; ctx.fillText(item, M + 28, y);
+        y += 48;
+      });
+      y += 40;
+      y = drawLeftLines(ctx, closing, M, y, 62, '50px "Roboto Slab", serif', DARK_TXT);
+      drawLeftLines(ctx, closingAccent, M, y, 62, '50px "Roboto Slab", serif', CORAL);
+      drawFooter(ctx, true);
+    }
+
+    function renderBigNumber(ctx, s) {
+      drawDarkBg(ctx);
+      const label = (s.label || '').toUpperCase();
+      const num = s.number || '';
+      const desc = s.description || '';
+      const punch = s.punchline || '';
+      const punchAccent = s.punchline_accent || '';
+
+      ctx.textBaseline = 'top';
+      const labelH = label ? 30 : 0;
+      const numH = 140;
+      const descH = 42;
+      const punchH = punch ? 40 : 0;
+      const blockH = labelH + 10 + numH + 16 + descH + 40 + punchH + (punchAccent ? 40 : 0);
+      let y = M + (CH - blockH) / 2;
+
+      if (label) { ctx.font = '22px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.fillText(label, M, y); y += labelH + 10; }
+      ctx.font = '140px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.fillText(num, M, y); y += numH + 16;
+      ctx.font = '30px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.fillText(desc, M, y); y += descH + 40;
+      if (punch) { ctx.font = '36px "Roboto Slab", serif'; ctx.fillStyle = DARK_TXT; ctx.fillText(punch, M, y); y += punchH; }
+      if (punchAccent) { ctx.font = '36px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.fillText(punchAccent, M, y); }
+      drawFooter(ctx, true);
+    }
+
+    function renderPullQuote(ctx, s) {
+      const canvas = ctx.canvas;
+      const quote = (s.quote || '').replace(/\\n/g, '\n');
+      if (typeof window.renderQuoteCard === 'function') {
+        window.renderQuoteCard(canvas, quote);
+      }
+    }
+
+    function renderCta(ctx, s) {
+      drawLightBg(ctx);
+      const mainLines = s.main || [];
+      const cta = s.cta || '';
+      const secondary = s.secondary || '';
+      const mainH = mainLines.length * 56;
+      const blockH = mainH + 24 + (cta ? 40 : 0) + (secondary ? 36 : 0);
+      let y = M + (CH - blockH) / 2;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      mainLines.forEach(line => { ctx.font = '44px "Roboto Slab", serif'; ctx.fillStyle = INK; ctx.fillText(line, CS/2, y); y += 56; });
+      y += 24;
+      if (cta) { ctx.font = '28px "Inter", sans-serif'; ctx.fillStyle = CORAL; ctx.fillText(cta, CS/2, y); y += 40; }
+      if (secondary) { ctx.font = '24px "Inter", sans-serif'; ctx.fillStyle = INK_SEC; ctx.fillText(secondary, CS/2, y); }
+      ctx.textAlign = 'left';
+      drawFooter(ctx, false);
+    }
+
+    function renderSlide(canvas, slide) {
+      canvas.width = CS; canvas.height = CS;
+      const ctx = canvas.getContext('2d');
+      const style = slide.style;
+      if (style === 'hook') renderHook(ctx, slide);
+      else if (style === 'statement_stats') renderStatementStats(ctx, slide);
+      else if (style === 'body') renderBody(ctx, slide);
+      else if (style === 'bullet_list') renderBulletList(ctx, slide);
+      else if (style === 'big_number') renderBigNumber(ctx, slide);
+      else if (style === 'pull_quote') renderPullQuote(ctx, slide);
+      else if (style === 'cta') renderCta(ctx, slide);
+      else { ctx.fillStyle = '#FAF9F6'; ctx.fillRect(0, 0, CS, CS); ctx.fillStyle = INK; ctx.font = '32px Inter'; ctx.fillText('Unknown style: ' + style, 40, 100); }
+    }
+
+    function showSlide(idx) {
+      if (!slideCanvases[idx]) return;
+      const mainCtx = carouselMain.getContext('2d');
+      carouselMain.width = CS; carouselMain.height = CS;
+      mainCtx.drawImage(slideCanvases[idx], 0, 0);
+      document.querySelectorAll('.carousel-thumb').forEach((t, i) => {
+        t.classList.toggle('active', i === idx);
+      });
+    }
+
+    document.getElementById('carousel-generate').addEventListener('click', async () => {
+      let data;
+      try { data = JSON.parse(carouselInput.value); }
+      catch (e) { carouselStatus.textContent = '❌ Invalid JSON: ' + e.message; return; }
+
+      const slides = data.slides || [];
+      if (!slides.length) { carouselStatus.textContent = '❌ No slides found.'; return; }
+
+      carouselStatus.textContent = 'Generating ' + slides.length + ' slides...';
+      await textureReady;
+      await document.fonts.ready;
+
+      slideCanvases = [];
+      carouselThumbs.innerHTML = '';
+
+      slides.forEach((slide, i) => {
+        const c = document.createElement('canvas');
+        renderSlide(c, slide);
+        slideCanvases.push(c);
+
+        const thumb = document.createElement('div');
+        thumb.className = 'carousel-thumb' + (i === 0 ? ' active' : '');
+        const tc = document.createElement('canvas');
+        tc.width = CS; tc.height = CS;
+        tc.getContext('2d').drawImage(c, 0, 0);
+        thumb.appendChild(tc);
+        thumb.addEventListener('click', () => showSlide(i));
+        carouselThumbs.appendChild(thumb);
+      });
+
+      showSlide(0);
+      carouselStatus.textContent = '✅ Generated ' + slides.length + ' slides.';
+    });
+
+    document.getElementById('carousel-download-zip').addEventListener('click', async () => {
+      if (!slideCanvases.length) { carouselStatus.textContent = 'Generate slides first.'; return; }
+      carouselStatus.textContent = 'Creating ZIP...';
+      const zip = new JSZip();
+      for (let i = 0; i < slideCanvases.length; i++) {
+        const blob = await new Promise(r => slideCanvases[i].toBlob(r, 'image/png'));
+        zip.file(`slide-${i + 1}.png`, blob);
+      }
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, 'carousel-slides.zip');
+      carouselStatus.textContent = '✅ ZIP downloaded.';
+    });
+
+    document.getElementById('carousel-download-pdf').addEventListener('click', async () => {
+      if (!slideCanvases.length) { carouselStatus.textContent = 'Generate slides first.'; return; }
+      carouselStatus.textContent = 'Creating PDF...';
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [CS, CS] });
+      for (let i = 0; i < slideCanvases.length; i++) {
+        if (i > 0) pdf.addPage([CS, CS]);
+        const imgData = slideCanvases[i].toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', 0, 0, CS, CS);
+      }
+      pdf.save('carousel.pdf');
+      carouselStatus.textContent = '✅ PDF downloaded.';
+    });
   }
 </script>
 
