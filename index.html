@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thursday Thoughts on AI — Brand Kit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   /* ---- PASSWORD GATE ---- */
@@ -792,53 +793,94 @@
     line-height: 1.5;
   }
 
-  /* ---- QUOTE PREVIEW ---- */
-  .quote-preview {
+  /* ---- QUOTE GENERATOR ---- */
+  .quote-generator {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin: 1.5rem 0 2rem;
+  }
+
+  .quote-canvas-panel {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .quote-canvas {
+    width: 100%;
+    max-width: 540px;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 12px 24px rgba(38, 70, 83, 0.12);
+    background: #F5F0E8;
+    display: block;
+  }
+
+  .quote-controls {
+    flex: 1;
+    min-width: 280px;
     background: rgba(38, 70, 83, 0.04);
+    border: 1px solid rgba(38, 70, 83, 0.08);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .quote-controls textarea {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    padding: 0.85rem 1rem;
     border-radius: 12px;
-    padding: 2.5rem;
-    text-align: center;
-    margin: 1.5rem 0;
-    position: relative;
-  }
-
-  .quote-preview::before {
-    content: '\201C';
-    font-family: var(--font-display);
-    font-size: 6rem;
-    color: var(--coral);
-    opacity: 1;
-    position: absolute;
-    top: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    line-height: 1;
-  }
-
-  .quote-preview blockquote {
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
+    border: 1px solid rgba(38, 70, 83, 0.2);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--ink);
-    line-height: 1.7;
-    max-width: 500px;
-    margin: 2rem auto 1rem;
-    position: relative;
+    background: #fff;
+    outline: none;
   }
 
-  .quote-preview blockquote mark {
-    background: rgba(255, 94, 126, 0.2);
-    color: inherit;
-    padding: 2px 4px;
-    border-radius: 3px;
-  }
+  .quote-controls textarea:focus { border-color: var(--coral); }
 
-  .quote-preview .brand-footer {
-    font-size: 0.75rem;
+  .quote-help {
+    font-size: 0.8rem;
     color: var(--muted);
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 2px solid var(--coral);
-    display: inline-block;
+    margin: 0.5rem 0 1.25rem;
+  }
+
+  .quote-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .quote-btn {
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+
+  .quote-btn-primary {
+    background: var(--coral);
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 16px rgba(255, 94, 126, 0.25);
+  }
+
+  .quote-btn-secondary {
+    background: transparent;
+    color: var(--coral);
+    border: 1.5px solid var(--coral);
+  }
+
+  .quote-btn:hover { transform: translateY(-1px); }
+
+  @media (max-width: 900px) {
+    .quote-generator { flex-direction: column; }
+    .quote-controls { width: 100%; }
   }
 
   /* ---- CONTENT STRUCTURE ---- */
@@ -1451,7 +1493,19 @@ is creative, metaphorical, and joyful.</code></pre>
     <h2>Quotable Format</h2>
     <p>Generated programmatically with Python/PIL. No AI image gen, zero cost per image.</p>
 
-    <img src="assets/quote-example.png" alt="Example quote card" style="width:100%;max-width:540px;border-radius:12px;box-shadow:0 12px 24px rgba(38,70,83,0.12);display:block;margin:0 auto 2rem;" />
+    <div class="quote-generator">
+      <div class="quote-canvas-panel">
+        <canvas class="quote-canvas" id="quote-canvas" width="1080" height="1080" aria-label="Quote card preview"></canvas>
+      </div>
+      <div class="quote-controls">
+        <textarea id="quote-input" placeholder="Enter your quote here..."></textarea>
+        <div class="quote-help">Wrap words in [brackets] for coral highlight</div>
+        <div class="quote-buttons">
+          <button class="quote-btn quote-btn-primary" id="quote-generate" type="button">Generate</button>
+          <button class="quote-btn quote-btn-secondary" id="quote-download" type="button">Download PNG</button>
+        </div>
+      </div>
+    </div>
 
     <h3>Specs</h3>
     <ul>
@@ -1729,6 +1783,190 @@ is creative, metaphorical, and joyful.</code></pre>
   }, { rootMargin: '-20% 0px -60% 0px' });
 
   sections.forEach(section => observer.observe(section));
+
+  // Quote card generator
+  const quoteCanvas = document.getElementById('quote-canvas');
+  const quoteInput = document.getElementById('quote-input');
+  const quoteGenerate = document.getElementById('quote-generate');
+  const quoteDownload = document.getElementById('quote-download');
+
+  if (quoteCanvas && quoteInput && quoteGenerate && quoteDownload) {
+    const ctx = quoteCanvas.getContext('2d');
+    const canvasSize = 1080;
+    const defaultQuote = 'When AI agents handle all the boring digital stuff, which [products] will you still want to use?';
+    const colors = {
+      background: '#F5F0E8',
+      coral: '#FF5E7E',
+      ink: '#2D2A28',
+      footer: '#A0968C'
+    };
+
+    quoteInput.value = defaultQuote;
+
+    function parseHighlightedWords(text) {
+      const segments = [];
+      let buffer = '';
+      let isHighlighted = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (char === '[') {
+          if (buffer) segments.push({ text: buffer, highlight: isHighlighted });
+          buffer = '';
+          isHighlighted = true;
+          continue;
+        }
+        if (char === ']') {
+          if (buffer) segments.push({ text: buffer, highlight: isHighlighted });
+          buffer = '';
+          isHighlighted = false;
+          continue;
+        }
+        buffer += char;
+      }
+      if (buffer) segments.push({ text: buffer, highlight: isHighlighted });
+
+      const words = [];
+      segments.forEach(segment => {
+        segment.text.split(/\s+/).forEach(word => {
+          if (word) words.push({ text: word, highlight: segment.highlight });
+        });
+      });
+      return words;
+    }
+
+    function wrapLines(words, maxWidth, fontSize) {
+      const lines = [];
+      const spaceWidth = ctx.measureText(' ').width;
+      let current = [];
+      let currentWidth = 0;
+
+      words.forEach(word => {
+        const wordWidth = ctx.measureText(word.text).width;
+        const nextWidth = currentWidth + (current.length ? spaceWidth : 0) + wordWidth;
+        if (nextWidth > maxWidth && current.length) {
+          lines.push({ words: current, width: currentWidth });
+          current = [];
+          currentWidth = 0;
+        }
+        current.push({ ...word, width: wordWidth });
+        currentWidth += (current.length > 1 ? spaceWidth : 0) + wordWidth;
+      });
+
+      if (current.length) lines.push({ words: current, width: currentWidth });
+      return { lines, spaceWidth, fontSize };
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = colors.background;
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+      ctx.fillStyle = 'rgba(45, 42, 40, 0.06)';
+      for (let i = 0; i < 9000; i++) {
+        const x = Math.random() * canvasSize;
+        const y = Math.random() * canvasSize;
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+
+    function drawQuoteMark() {
+      ctx.fillStyle = colors.coral;
+      ctx.font = '120px "Special Elite", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('\u201C', canvasSize / 2, 120);
+    }
+
+    function drawQuoteText(text) {
+      const padding = 140;
+      const fontSize = 48;
+      const lineHeight = Math.round(fontSize * 1.35);
+      const maxWidth = canvasSize - padding * 2;
+
+      ctx.font = `${fontSize}px "Special Elite", serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+
+      const words = parseHighlightedWords(text);
+      const { lines, spaceWidth } = wrapLines(words, maxWidth, fontSize);
+      const textHeight = lines.length * lineHeight;
+      const firstBaseline = Math.max(260 + fontSize, 520 - textHeight / 2 + fontSize);
+
+      lines.forEach((line, index) => {
+        const lineY = firstBaseline + index * lineHeight;
+        const startX = (canvasSize - line.width) / 2;
+        let x = startX;
+        const placements = [];
+
+        line.words.forEach((word, wordIndex) => {
+          placements.push({ ...word, x, y: lineY });
+          x += word.width + (wordIndex < line.words.length - 1 ? spaceWidth : 0);
+        });
+
+        ctx.fillStyle = 'rgba(255, 94, 126, 0.28)';
+        placements.forEach(word => {
+          if (!word.highlight) return;
+          const metrics = ctx.measureText(word.text);
+          const ascent = metrics.actualBoundingBoxAscent || fontSize * 0.8;
+          const descent = metrics.actualBoundingBoxDescent || fontSize * 0.2;
+          const rectHeight = ascent + descent + 10;
+          const rectY = word.y - ascent - 5;
+          ctx.fillRect(word.x - 6, rectY, word.width + 12, rectHeight);
+        });
+
+        ctx.fillStyle = colors.ink;
+        placements.forEach(word => {
+          ctx.fillText(word.text, word.x, word.y);
+        });
+      });
+
+      const dividerY = firstBaseline + (lines.length - 1) * lineHeight + 70;
+      ctx.strokeStyle = colors.coral;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(canvasSize / 2 - 60, dividerY);
+      ctx.lineTo(canvasSize / 2 + 60, dividerY);
+      ctx.stroke();
+
+      ctx.fillStyle = colors.footer;
+      ctx.font = '20px "Inter", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('Thursday Thoughts on AI', canvasSize / 2, dividerY + 18);
+    }
+
+    function renderQuote(text) {
+      const safeText = text && text.trim() ? text : defaultQuote;
+      drawBackground();
+      drawQuoteMark();
+      drawQuoteText(safeText);
+    }
+
+    let debounceId;
+    quoteInput.addEventListener('input', () => {
+      window.clearTimeout(debounceId);
+      debounceId = window.setTimeout(() => renderQuote(quoteInput.value), 300);
+    });
+
+    quoteGenerate.addEventListener('click', () => renderQuote(quoteInput.value));
+
+    quoteDownload.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'thursday-thoughts-quote.png';
+      link.href = quoteCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    const fontReady = document.fonts
+      ? Promise.all([
+        document.fonts.load('120px "Special Elite"'),
+        document.fonts.load('48px "Special Elite"'),
+        document.fonts.load('20px "Inter"')
+      ])
+      : Promise.resolve();
+
+    fontReady.then(() => renderQuote(defaultQuote));
+  }
 </script>
 
 </body>
