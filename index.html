@@ -1869,14 +1869,6 @@ is creative, metaphorical, and joyful.</code></pre>
       }
     }
 
-    function drawQuoteMark(topY) {
-      ctx.fillStyle = colors.coral;
-      ctx.font = '120px "Special Elite", serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'alphabetic';
-      ctx.fillText('\u201C', canvasSize / 2, topY - 20);
-    }
-
     function drawQuoteText(text) {
       const padding = 140;
       const fontSize = 36;
@@ -1884,7 +1876,7 @@ is creative, metaphorical, and joyful.</code></pre>
       const maxWidth = canvasSize - padding * 2;
       const quoteMarkHeight = 100;
 
-      // Set font BEFORE measuring for wrap
+      // Set quote body font BEFORE measuring for wrap
       ctx.font = `${fontSize}px "Special Elite", serif`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
@@ -1896,7 +1888,19 @@ is creative, metaphorical, and joyful.</code></pre>
       const totalHeight = quoteMarkHeight + textHeight;
       const firstBaseline = Math.max(200 + quoteMarkHeight + fontSize, (canvasSize * 0.48) - totalHeight / 2 + quoteMarkHeight + fontSize);
 
-      drawQuoteMark(firstBaseline - fontSize * 0.8);
+      // Draw quote mark FIRST, then restore body font
+      ctx.save();
+      ctx.fillStyle = colors.coral;
+      ctx.font = '120px "Special Elite", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText('\u201C', canvasSize / 2, firstBaseline - fontSize * 0.8 - 20);
+      ctx.restore();
+
+      // Restore body font after quote mark
+      ctx.font = `${fontSize}px "Special Elite", serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
 
       lines.forEach((line, index) => {
         const lineY = firstBaseline + index * lineHeight;
