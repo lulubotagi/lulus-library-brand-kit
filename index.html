@@ -1858,25 +1858,39 @@ is creative, metaphorical, and joyful.</code></pre>
     }
 
     function drawBackground() {
+      // Warm cardstock base
       ctx.fillStyle = colors.background;
       ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-      ctx.fillStyle = 'rgba(45, 42, 40, 0.06)';
-      for (let i = 0; i < 9000; i++) {
+      // Heavy paper grain — visible fiber marks like the Python version
+      ctx.fillStyle = 'rgba(45, 42, 40, 0.04)';
+      for (let i = 0; i < 12000; i++) {
         const x = Math.random() * canvasSize;
         const y = Math.random() * canvasSize;
         ctx.fillRect(x, y, 1, 1);
       }
+      // Horizontal scratch/fiber lines
+      ctx.strokeStyle = 'rgba(45, 42, 40, 0.03)';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < 200; i++) {
+        const y = Math.random() * canvasSize;
+        const x = Math.random() * canvasSize * 0.7;
+        const len = 20 + Math.random() * 80;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + len, y + (Math.random() - 0.5) * 2);
+        ctx.stroke();
+      }
     }
 
     function drawQuoteText(text) {
-      const padding = 140;
-      const fontSize = 46;
-      const lineHeight = Math.round(fontSize * 1.35);
+      const padding = 120;
+      const fontSize = 48;
+      const lineHeight = Math.round(fontSize * 1.45);
       const maxWidth = canvasSize - padding * 2;
-      const quoteMarkHeight = 100;
 
-      const fontFamily = '"American Typewriter", "Courier New", serif';
+      // Use AmericanTypewriter (iOS/macOS system font name variants)
+      const fontFamily = '"AmericanTypewriter-Bold", "American Typewriter", "Courier New", serif';
 
       // Set quote body font BEFORE measuring for wrap
       ctx.font = `bold ${fontSize}px ${fontFamily}`;
@@ -1887,19 +1901,23 @@ is creative, metaphorical, and joyful.</code></pre>
       const { lines, spaceWidth } = wrapLines(words, maxWidth, fontSize);
       const textHeight = lines.length * lineHeight;
 
-      const totalHeight = quoteMarkHeight + textHeight;
-      const firstBaseline = Math.max(200 + quoteMarkHeight + fontSize, (canvasSize * 0.48) - totalHeight / 2 + quoteMarkHeight + fontSize);
+      // Vertically center the text block (quote mark + text + footer)
+      const quoteMarkGap = 30;
+      const quoteMarkSize = 80;
+      const blockHeight = quoteMarkSize + quoteMarkGap + textHeight;
+      const blockTop = (canvasSize - 140) / 2 - blockHeight / 2; // 140 = footer zone
+      const firstBaseline = blockTop + quoteMarkSize + quoteMarkGap + fontSize;
 
-      // Draw quote mark
+      // ── Quote mark (big coral curly quotes) ──
       ctx.save();
       ctx.fillStyle = colors.coral;
-      ctx.font = `120px ${fontFamily}`;
+      ctx.font = `bold 140px ${fontFamily}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
-      ctx.fillText('\u201C', canvasSize / 2, firstBaseline - fontSize * 0.8 - 20);
+      ctx.fillText('\u201C', canvasSize / 2, blockTop + quoteMarkSize);
       ctx.restore();
 
-      // Restore body font after quote mark
+      // ── Body text ──
       ctx.font = `bold ${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
@@ -1915,36 +1933,38 @@ is creative, metaphorical, and joyful.</code></pre>
           x += word.width + (wordIndex < line.words.length - 1 ? spaceWidth : 0);
         });
 
-        ctx.fillStyle = 'rgba(255, 94, 126, 0.28)';
+        // ── Highlights: saturated pink, generous padding ──
+        ctx.fillStyle = 'rgba(255, 182, 193, 0.55)';
         placements.forEach(word => {
           if (!word.highlight) return;
           const metrics = ctx.measureText(word.text);
           const ascent = metrics.actualBoundingBoxAscent || fontSize * 0.8;
           const descent = metrics.actualBoundingBoxDescent || fontSize * 0.2;
-          const rectHeight = ascent + descent + 10;
-          const rectY = word.y - ascent - 5;
-          ctx.fillRect(word.x - 6, rectY, word.width + 12, rectHeight);
+          const pad = 8;
+          ctx.fillRect(word.x - pad, word.y - ascent - pad, word.width + pad * 2, ascent + descent + pad * 2);
         });
 
-        ctx.fillStyle = colors.ink;
+        // ── Ink: dark warm charcoal ──
+        ctx.fillStyle = '#1a1815';
         placements.forEach(word => {
           ctx.fillText(word.text, word.x, word.y);
         });
       });
 
+      // ── Footer: pinned to bottom ──
       const dividerY = canvasSize - 100;
       ctx.strokeStyle = colors.coral;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.moveTo(canvasSize / 2 - 60, dividerY);
       ctx.lineTo(canvasSize / 2 + 60, dividerY);
       ctx.stroke();
 
-      ctx.fillStyle = colors.footer;
-      ctx.font = '20px "Inter", sans-serif';
+      ctx.fillStyle = '#8a8078';
+      ctx.font = '22px "Inter", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText('Thursday Thoughts on AI', canvasSize / 2, dividerY + 18);
+      ctx.fillText('Thursday Thoughts on AI', canvasSize / 2, dividerY + 16);
     }
 
     function renderQuote(text) {
