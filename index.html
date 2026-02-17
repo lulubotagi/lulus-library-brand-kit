@@ -1869,12 +1869,12 @@ is creative, metaphorical, and joyful.</code></pre>
       }
     }
 
-    function drawQuoteMark() {
+    function drawQuoteMark(topY) {
       ctx.fillStyle = colors.coral;
       ctx.font = '120px "Special Elite", serif';
       ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillText('\u201C', canvasSize / 2, 120);
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText('\u201C', canvasSize / 2, topY - 20);
     }
 
     function drawQuoteText(text) {
@@ -1890,7 +1890,11 @@ is creative, metaphorical, and joyful.</code></pre>
       const words = parseHighlightedWords(text);
       const { lines, spaceWidth } = wrapLines(words, maxWidth, fontSize);
       const textHeight = lines.length * lineHeight;
-      const firstBaseline = Math.max(260 + fontSize, 520 - textHeight / 2 + fontSize);
+      const quoteMarkHeight = 100;
+      const totalHeight = quoteMarkHeight + textHeight;
+      const firstBaseline = Math.max(200 + quoteMarkHeight + fontSize, (canvasSize * 0.48) - totalHeight / 2 + quoteMarkHeight + fontSize);
+
+      drawQuoteMark(firstBaseline - fontSize * 0.8);
 
       lines.forEach((line, index) => {
         const lineY = firstBaseline + index * lineHeight;
@@ -1938,7 +1942,6 @@ is creative, metaphorical, and joyful.</code></pre>
     function renderQuote(text) {
       const safeText = text && text.trim() ? text : defaultQuote;
       drawBackground();
-      drawQuoteMark();
       drawQuoteText(safeText);
     }
 
