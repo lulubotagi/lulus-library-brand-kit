@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thursday Thoughts on AI — Brand Kit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   /* ---- PASSWORD GATE ---- */
   .gate {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: #1A1A1A;
+    background: #264653;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,13 +21,13 @@
   }
   .gate.hidden { display: none; }
   .gate h1 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Roboto Slab', 'Times New Roman', serif;
     color: #fff;
     font-size: 1.6rem;
     margin-bottom: 0.25rem;
   }
   .gate h1 span { color: #FF5E7E; }
-  .gate p { color: #A0968C; font-size: 0.85rem; margin-bottom: 1.5rem; }
+  .gate p { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 1.5rem; }
   .gate-form { display: flex; gap: 0.5rem; }
   .gate-form input {
     padding: 0.65rem 1rem;
@@ -58,16 +58,17 @@
 
   :root {
     --coral: #FF5E7E;
-    --coral-light: rgba(255, 94, 126, 0.08);
-    --coral-mid: rgba(255, 94, 126, 0.15);
-    --charcoal: #1A1A1A;
-    --stone: #F5F5F4;
-    --cream: #F5F0E8;
-    --ink: #2D2A28;
-    --muted: #A0968C;
-    --muted-light: #C8C0B8;
-    --white: #FAFAF9;
-    --font-display: 'Playfair Display', Georgia, serif;
+    --coral-light: rgba(255, 94, 126, 0.12);
+    --coral-mid: rgba(255, 94, 126, 0.2);
+    --charcoal: #264653;
+    --teal: #2A9D8F;
+    --gold: #E9C46A;
+    --violet: #9D85B1;
+    --canvas: #FAF9F6;
+    --ink: var(--charcoal);
+    --muted: rgba(38, 70, 83, 0.7);
+    --muted-light: rgba(38, 70, 83, 0.35);
+    --font-display: 'Roboto Slab', 'Times New Roman', serif;
     --font-body: 'Inter', -apple-system, sans-serif;
     --font-mono: 'Special Elite', 'Courier New', monospace;
   }
@@ -79,7 +80,7 @@
   body {
     font-family: var(--font-body);
     color: var(--ink);
-    background: var(--white);
+    background: var(--canvas);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
@@ -238,7 +239,7 @@
 
   /* ---- HERO ---- */
   .hero {
-    background: var(--cream);
+    background: var(--canvas);
     padding: 6rem 4rem 5rem;
     position: relative;
     overflow: hidden;
@@ -302,7 +303,7 @@
   section {
     padding: 4rem;
     max-width: 900px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid rgba(38, 70, 83, 0.12);
   }
 
   section:last-child { border-bottom: none; }
@@ -363,15 +364,15 @@
   .swatch {
     border-radius: 12px;
     overflow: hidden;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    background: var(--canvas);
+    box-shadow: 0 1px 3px rgba(38, 70, 83, 0.12);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
   }
 
   .swatch:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(38, 70, 83, 0.2);
   }
 
   .swatch-color {
@@ -433,7 +434,7 @@
   .type-item {
     padding: 1.5rem;
     border-radius: 12px;
-    background: var(--stone);
+    background: rgba(38, 70, 83, 0.05);
   }
 
   .type-meta {
@@ -467,6 +468,159 @@
     line-height: 1.6;
   }
 
+  /* ---- WORDMARK ---- */
+  .wordmark-card {
+    padding: 1.75rem;
+    border-radius: 16px;
+    background: rgba(38, 70, 83, 0.04);
+    border: 1px solid rgba(38, 70, 83, 0.1);
+  }
+
+  .wordmark-stack,
+  .wordmark-row {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--charcoal);
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .wordmark-stack {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    font-size: 2.1rem;
+    line-height: 1.05;
+  }
+
+  .wordmark-row {
+    font-size: 1.6rem;
+    margin-top: 1.25rem;
+  }
+
+  .brushstroke {
+    position: relative;
+    display: inline-block;
+    color: #fff;
+    padding: 0.1em 0.45em;
+    margin: 0 0.1em;
+    background: var(--coral);
+    border-radius: 18px 12px 20px 10px;
+    transform: rotate(-2deg) skewX(-4deg);
+    box-shadow: 0 6px 14px rgba(255, 94, 126, 0.35);
+  }
+
+  .brushstroke::before {
+    content: '';
+    position: absolute;
+    inset: 12% 4%;
+    border-radius: inherit;
+    background: rgba(255,255,255,0.12);
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  .wordmark-note {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 640px;
+  }
+
+  /* ---- IMAGE STYLES ---- */
+  .image-style-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .image-style-card {
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(38, 70, 83, 0.05);
+    border: 1px solid rgba(38, 70, 83, 0.08);
+  }
+
+  .image-style-title {
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 0.35rem;
+  }
+
+  .image-style-meta {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .image-style-card ul {
+    margin-top: 0.75rem;
+  }
+
+  /* ---- ANNOTATION KIT ---- */
+  .annotation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .annotation-card {
+    padding: 1.2rem;
+    border-radius: 12px;
+    background: rgba(38, 70, 83, 0.04);
+    border: 1px solid rgba(38, 70, 83, 0.08);
+  }
+
+  .annotation-title {
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.4rem;
+  }
+
+  /* ---- VISUAL DO/DONT TABLE ---- */
+  .do-dont-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0 0;
+    font-size: 0.88rem;
+  }
+
+  .do-dont-table th,
+  .do-dont-table td {
+    text-align: left;
+    padding: 0.9rem;
+    border-bottom: 1px solid rgba(38, 70, 83, 0.12);
+    vertical-align: top;
+  }
+
+  .do-dont-table th {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+
+  .do-dont-table td strong {
+    color: var(--charcoal);
+  }
+
+  /* ---- PROMPT BLOCK ---- */
+  .prompt-block {
+    background: rgba(38, 70, 83, 0.06);
+    border-radius: 12px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    border: 1px solid rgba(38, 70, 83, 0.12);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
   /* ---- BELIEF CARDS ---- */
   .beliefs-grid {
     display: grid;
@@ -478,7 +632,7 @@
   .belief-card {
     padding: 1.5rem;
     border-radius: 12px;
-    background: var(--stone);
+    background: rgba(38, 70, 83, 0.05);
     border-left: 3px solid var(--coral);
     transition: background 0.2s;
   }
@@ -516,8 +670,24 @@
   }
 
   .voice-col { padding: 1.25rem; border-radius: 12px; }
-  .voice-do { background: rgba(34, 197, 94, 0.06); border: 1px solid rgba(34, 197, 94, 0.15); }
-  .voice-dont { background: rgba(239, 68, 68, 0.04); border: 1px solid rgba(239, 68, 68, 0.1); }
+  .voice-do { background: rgba(42, 157, 143, 0.08); border: 1px solid rgba(42, 157, 143, 0.2); }
+  .voice-dont { background: rgba(255, 94, 126, 0.1); border: 1px solid rgba(255, 94, 126, 0.2); }
+
+  .voice-identity {
+    margin: 1.25rem 0 1.75rem;
+    padding: 1.25rem;
+    border-radius: 12px;
+    background: rgba(255, 94, 126, 0.12);
+    border: 1px solid rgba(255, 94, 126, 0.2);
+  }
+
+  .voice-identity strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+    color: var(--charcoal);
+  }
 
   .voice-col h4 {
     font-size: 0.75rem;
@@ -527,8 +697,8 @@
     font-weight: 600;
   }
 
-  .voice-do h4 { color: #16a34a; }
-  .voice-dont h4 { color: #dc2626; }
+  .voice-do h4 { color: var(--teal); }
+  .voice-dont h4 { color: var(--coral); }
 
   .voice-col li {
     font-size: 0.88rem;
@@ -538,7 +708,7 @@
 
   /* ---- QUOTE PREVIEW ---- */
   .quote-preview {
-    background: var(--cream);
+    background: rgba(38, 70, 83, 0.04);
     border-radius: 12px;
     padding: 2.5rem;
     text-align: center;
@@ -645,11 +815,11 @@
   .tool-card {
     padding: 1.25rem;
     border-radius: 12px;
-    background: var(--stone);
-    border: 1px solid rgba(0,0,0,0.04);
+    background: rgba(38, 70, 83, 0.05);
+    border: 1px solid rgba(38, 70, 83, 0.1);
   }
 
-  .tool-card.live { border-left: 3px solid #16a34a; }
+  .tool-card.live { border-left: 3px solid var(--teal); }
   .tool-card.planned { border-left: 3px solid var(--muted-light); }
 
   .tool-status {
@@ -660,7 +830,7 @@
     margin-bottom: 0.35rem;
   }
 
-  .tool-card.live .tool-status { color: #16a34a; }
+  .tool-card.live .tool-status { color: var(--teal); }
   .tool-card.planned .tool-status { color: var(--muted); }
 
   .tool-name {
@@ -690,7 +860,7 @@
     gap: 0.5rem;
     padding: 0.6rem 1.25rem;
     border-radius: 100px;
-    background: var(--stone);
+    background: rgba(38, 70, 83, 0.05);
     color: var(--charcoal);
     text-decoration: none;
     font-size: 0.85rem;
@@ -717,7 +887,7 @@
   .platform-card {
     padding: 1.25rem;
     border-radius: 12px;
-    background: var(--stone);
+    background: rgba(38, 70, 83, 0.05);
   }
 
   .platform-name {
@@ -765,7 +935,7 @@
     section { scroll-margin-top: 72px; }
 
     .color-grid { grid-template-columns: repeat(3, 1fr); }
-    .voice-grid, .toolkit-grid, .platform-grid { grid-template-columns: 1fr; }
+    .voice-grid, .toolkit-grid, .platform-grid, .image-style-grid, .annotation-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 500px) {
@@ -810,7 +980,9 @@
   <div class="nav-section">Visual</div>
   <a href="#colors">Color Palette</a>
   <a href="#typography">Typography</a>
-  <a href="#imagery">Image Style</a>
+  <a href="#wordmark">Logo & Wordmark</a>
+  <a href="#image-styles">Image Styles</a>
+  <a href="#annotation">Annotation Kit</a>
   <a href="#quotable">Quote Cards</a>
 
   <div class="nav-section">Content</div>
@@ -820,7 +992,7 @@
   <div class="nav-section">Resources</div>
   <a href="#toolkit">Toolkit</a>
   <a href="#links">Key Links</a>
-  <a href="#rules">Agent Rules</a>
+  <a href="#visual-rules">Visual Do's & Don'ts</a>
 
   <div class="nav-footer">
     <span class="status-badge">Draft</span><br><br>
@@ -914,6 +1086,11 @@
     <p><strong>Opinionated but generous.</strong> Strong takes that respect the reader's intelligence.</p>
     <p><strong>Practical.</strong> Even philosophical posts land with actionable takeaways.</p>
 
+    <div class="voice-identity">
+      <strong>The Artist-Director</strong>
+      <p>We explain technical complexity with the clarity of a Product Director and the creativity of a Studio Artist.</p>
+    </div>
+
     <h3>Style Notes</h3>
     <ul>
       <li>Mix of short punchy lines and longer exploratory ones</li>
@@ -985,52 +1162,57 @@
       <div class="swatch" onclick="copyColor('#FF5E7E', this)">
         <div class="swatch-color" style="background: #FF5E7E;"></div>
         <div class="swatch-info">
-          <div class="swatch-name">Coral</div>
+          <div class="swatch-name">Neon Coral</div>
           <div class="swatch-hex">#FF5E7E</div>
-          <div class="swatch-usage">Primary accent, highlights, CTAs</div>
+          <div class="swatch-usage">The Hero — buttons, links, highlights</div>
         </div>
       </div>
-      <div class="swatch" onclick="copyColor('#1A1A1A', this)">
-        <div class="swatch-color" style="background: #1A1A1A;"></div>
+      <div class="swatch" onclick="copyColor('#264653', this)">
+        <div class="swatch-color" style="background: #264653;"></div>
         <div class="swatch-info">
-          <div class="swatch-name">Charcoal</div>
-          <div class="swatch-hex">#1A1A1A</div>
-          <div class="swatch-usage">Headlines, primary text</div>
+          <div class="swatch-name">Dark Charcoal</div>
+          <div class="swatch-hex">#264653</div>
+          <div class="swatch-usage">The Ink — all text, outlines</div>
         </div>
       </div>
-      <div class="swatch" onclick="copyColor('#F5F5F4', this)">
-        <div class="swatch-color" style="background: #F5F5F4; border-bottom: 1px solid rgba(0,0,0,0.06);"></div>
+      <div class="swatch" onclick="copyColor('#2A9D8F', this)">
+        <div class="swatch-color" style="background: #2A9D8F;"></div>
         <div class="swatch-info">
-          <div class="swatch-name">Stone</div>
-          <div class="swatch-hex">#F5F5F4</div>
-          <div class="swatch-usage">Backgrounds</div>
+          <div class="swatch-name">Deep Teal</div>
+          <div class="swatch-hex">#2A9D8F</div>
+          <div class="swatch-usage">Cool/Tech — data, future, structure</div>
         </div>
       </div>
-      <div class="swatch" onclick="copyColor('#F5F0E8', this)">
-        <div class="swatch-color" style="background: #F5F0E8; border-bottom: 1px solid rgba(0,0,0,0.06);"></div>
+      <div class="swatch" onclick="copyColor('#E9C46A', this)">
+        <div class="swatch-color" style="background: #E9C46A;"></div>
         <div class="swatch-info">
-          <div class="swatch-name">Warm Cream</div>
-          <div class="swatch-hex">#F5F0E8</div>
-          <div class="swatch-usage">Cardstock, paper backgrounds</div>
+          <div class="swatch-name">Harvest Gold</div>
+          <div class="swatch-hex">#E9C46A</div>
+          <div class="swatch-usage">Warm/Value — ideas, optimism</div>
         </div>
       </div>
-      <div class="swatch" onclick="copyColor('#2D2A28', this)">
-        <div class="swatch-color" style="background: #2D2A28;"></div>
+      <div class="swatch" onclick="copyColor('#9D85B1', this)">
+        <div class="swatch-color" style="background: #9D85B1;"></div>
         <div class="swatch-info">
-          <div class="swatch-name">Ink Black</div>
-          <div class="swatch-hex">#2D2A28</div>
-          <div class="swatch-usage">Body text (warm black)</div>
+          <div class="swatch-name">Muted Violet</div>
+          <div class="swatch-hex">#9D85B1</div>
+          <div class="swatch-usage">Creative/Magic — imagination</div>
         </div>
       </div>
-      <div class="swatch" onclick="copyColor('#A0968C', this)">
-        <div class="swatch-color" style="background: #A0968C;"></div>
+      <div class="swatch" onclick="copyColor('#FAF9F6', this)">
+        <div class="swatch-color" style="background: #FAF9F6; border-bottom: 1px solid rgba(38, 70, 83, 0.12);"></div>
         <div class="swatch-info">
-          <div class="swatch-name">Muted Gray</div>
-          <div class="swatch-hex">#A0968C</div>
-          <div class="swatch-usage">Secondary text, captions</div>
+          <div class="swatch-name">Gallery White</div>
+          <div class="swatch-hex">#FAF9F6</div>
+          <div class="swatch-usage">The Canvas — background for everything</div>
         </div>
       </div>
     </div>
+    <ul>
+      <li><strong>Professional mode:</strong> Dark Charcoal + Neon Coral accents only</li>
+      <li><strong>Creative mode:</strong> Full spectrum watercolor (Teal, Gold, Violet + Coral)</li>
+      <li><strong>Never use pure black (#000000).</strong></li>
+    </ul>
   </section>
 
   <!-- TYPOGRAPHY -->
@@ -1039,7 +1221,7 @@
     <h2>Type System</h2>
     <div class="type-showcase">
       <div class="type-item">
-        <div class="type-meta">Playfair Display — Headlines & Titles</div>
+        <div class="type-meta">Roboto Slab — Headlines & Titles</div>
         <div class="type-playfair">The Disposable Software Paradox</div>
       </div>
       <div class="type-item">
@@ -1053,39 +1235,117 @@
     </div>
   </section>
 
-  <!-- IMAGERY -->
-  <section id="imagery">
-    <div class="section-label">07 — Image Style</div>
-    <h2>Visual Language</h2>
-    <div class="voice-grid">
-      <div class="voice-col voice-do">
-        <h4>✓ Use</h4>
+  <!-- WORDMARK -->
+  <section id="wordmark">
+    <div class="section-label">07 — Logo & Wordmark</div>
+    <h2>Logo & Wordmark</h2>
+    <p>The brushstroke behind "Thoughts" is the signature brand device. It should feel hand-painted, organic, and slightly imperfect.</p>
+    <div class="wordmark-card">
+      <div class="wordmark-stack">
+        <span>Thursday</span>
+        <span class="brushstroke">Thoughts</span>
+        <span>on AI</span>
+      </div>
+      <div class="wordmark-row">
+        <span>Thursday</span>
+        <span class="brushstroke">Thoughts</span>
+        <span>on AI</span>
+      </div>
+      <div class="wordmark-note">Wordmark text is Roboto Slab Bold in Dark Charcoal. The brushstroke is Neon Coral with white text.</div>
+    </div>
+  </section>
+
+  <!-- IMAGE STYLES -->
+  <section id="image-styles">
+    <div class="section-label">08 — Image Styles</div>
+    <h2>Image Styles</h2>
+    <p>Four distinct visual modes. Pick the style that best matches the content type and keep the execution consistent.</p>
+    <div class="image-style-grid">
+      <div class="image-style-card">
+        <div class="image-style-meta">Style 1</div>
+        <div class="image-style-title">Ink & Accent (Diagrams)</div>
+        <p>Use for hard concepts, frameworks, and strategy. Smart, clear, authoritative.</p>
         <ul>
-          <li>Clean, editorial feel</li>
-          <li>Cardstock & paper textures</li>
-          <li>Typewriter / handwritten touches</li>
-          <li>Warm tones (cream, stone, coral)</li>
-          <li>Generous whitespace</li>
-          <li>Real product screenshots when relevant</li>
+          <li>Clean ink lines and simple shapes</li>
+          <li>Coral watercolor highlight on the single most important node</li>
+          <li>Keep the rest restrained and readable</li>
         </ul>
       </div>
-      <div class="voice-col voice-dont">
-        <h4>✗ Avoid</h4>
+      <div class="image-style-card">
+        <div class="image-style-meta">Style 2</div>
+        <div class="image-style-title">Floating Interface (Screenshots)</div>
+        <p>Use for product demos, tool walkthroughs, and feature highlights.</p>
         <ul>
-          <li>Cluttered infographics</li>
-          <li>Glossy stock photos</li>
-          <li>Generic tech imagery</li>
-          <li>Cold blues and grays</li>
-          <li>Busy compositions</li>
-          <li>Abstract AI art / "blue brain" imagery</li>
+          <li>Screenshot floats on Gallery White with soft shadow</li>
+          <li>Annotation in bold ink with loose coral wash</li>
+          <li>Center the UI at about half the canvas</li>
         </ul>
+      </div>
+      <div class="image-style-card">
+        <div class="image-style-meta">Style 3</div>
+        <div class="image-style-title">Editorial Collage (Photos)</div>
+        <p>Use for personal stories, week-in-review, and real-life moments.</p>
+        <ul>
+          <li>Polaroid-style white border and soft shadow</li>
+          <li>Caption in Roboto Slab, charcoal ink</li>
+          <li>Coral brushstroke behind 1-2 key words in the caption</li>
+        </ul>
+      </div>
+      <div class="image-style-card">
+        <div class="image-style-meta">Style 4</div>
+        <div class="image-style-title">Vibrant Concept (Illustrations)</div>
+        <p>Use for metaphors, future-gazing, and abstract ideas.</p>
+        <ul>
+          <li>Simple metaphor in bold ink sketch</li>
+          <li>Watercolor explosion in Teal, Gold, Violet, Coral</li>
+          <li>Energy debris: sparks, squiggles, flow lines</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>AI Generation Prompt (Style 4)</h3>
+    <pre class="prompt-block"><code>A loose, expressive, and high-energy "ink and wash" illustration of [INSERT SUBJECT HERE].
+The artwork mimics a creative graphic recording or concept sketch, featuring bold, confident ink
+lines created with a brush pen. The linework must have variable thickness (tapering from thick to
+thin) and organic imperfections to look truly hand-drawn. Avoid text, letters, typography, and
+uniform vector lines.
+
+Surround the main subject with dynamic energy debris - floating sparks, squiggles, flow lines, and
+small abstract icons that give the piece movement. The color application is explosive and messy:
+use loose watercolor washes in Neon Coral (#FF5E7E), Deep Teal (#2A9D8F), Harvest Gold (#E9C46A),
+and Muted Violet (#9D85B1). The colors should not stay inside the lines; let them bleed, drip,
+splash, and blend together across the textured Gallery White (#FAF9F6) paper background. The vibe
+is creative, metaphorical, and joyful.</code></pre>
+  </section>
+
+  <!-- ANNOTATION KIT -->
+  <section id="annotation">
+    <div class="section-label">09 — Annotation Kit</div>
+    <h2>Hand-Drawn Annotation Kit</h2>
+    <p>Reusable annotation elements in coral watercolor with ink outlines. Keep the mark-making loose and organic.</p>
+    <div class="annotation-grid">
+      <div class="annotation-card">
+        <div class="annotation-title">Arrows</div>
+        <p>Straight, curved, double-headed, and spiral arrows with bold ink lines and coral wash.</p>
+      </div>
+      <div class="annotation-card">
+        <div class="annotation-title">Shapes</div>
+        <p>Circle/ellipse, rounded rectangle, and diamond. Keep edges imperfect and hand-drawn.</p>
+      </div>
+      <div class="annotation-card">
+        <div class="annotation-title">Accents</div>
+        <p>Wavy underline, stars, and small burst marks for emphasis.</p>
+      </div>
+      <div class="annotation-card">
+        <div class="annotation-title">Speech Bubbles</div>
+        <p>Loose bubble shapes with coral fill, ink outline, and playful tails.</p>
       </div>
     </div>
   </section>
 
   <!-- QUOTE CARD -->
   <section id="quotable">
-    <div class="section-label">08 — Quote Cards</div>
+    <div class="section-label">10 — Quote Cards</div>
     <h2>Quotable Format</h2>
     <p>Generated programmatically with Python/PIL. No AI image gen, zero cost per image.</p>
 
@@ -1098,7 +1358,7 @@
     <ul>
       <li>1080×1080 square format</li>
       <li>Procedural cardstock texture background</li>
-      <li>Special Elite typewriter font, warm charcoal ink</li>
+      <li>Special Elite typewriter font, Dark Charcoal ink</li>
       <li>Large coral quotation mark as top accent</li>
       <li>Coral highlighter on key phrases (via [brackets])</li>
       <li>"Thursday Thoughts on AI" footer with coral divider</li>
@@ -1108,7 +1368,7 @@
 
   <!-- STRUCTURE -->
   <section id="structure">
-    <div class="section-label">09 — Content Architecture</div>
+    <div class="section-label">11 — Content Architecture</div>
     <h2>Newsletter Post Structure</h2>
     <div class="structure-flow">
       <div class="structure-step">
@@ -1154,7 +1414,7 @@
 
   <!-- PILLARS -->
   <section id="pillars">
-    <div class="section-label">10 — Content Pillars</div>
+    <div class="section-label">12 — Content Pillars</div>
     <h2>What Thursday Thoughts Covers</h2>
     <div class="beliefs-grid">
       <div class="belief-card">
@@ -1187,7 +1447,7 @@
 
   <!-- TOOLKIT -->
   <section id="toolkit">
-    <div class="section-label">11 — Toolkit</div>
+    <div class="section-label">13 — Toolkit</div>
     <h2>Brand Tools</h2>
     <div class="toolkit-grid">
       <div class="tool-card live">
@@ -1215,7 +1475,7 @@
 
   <!-- LINKS -->
   <section id="links">
-    <div class="section-label">12 — Key Links</div>
+    <div class="section-label">14 — Key Links</div>
     <h2>Find Thursday Thoughts</h2>
     <div class="links-grid">
       <a href="https://blog.jaclynkonzelmann.com" target="_blank" class="link-pill">
@@ -1241,35 +1501,62 @@
     </div>
   </section>
 
-  <!-- AGENT RULES -->
-  <section id="rules">
-    <div class="section-label">13 — Agent Quick Reference</div>
-    <h2>Do's and Don'ts</h2>
-    <p>For any agent or collaborator creating content for Thursday Thoughts:</p>
-    <div class="voice-grid">
-      <div class="voice-col voice-do">
-        <h4>✓ Always</h4>
-        <ul>
-          <li>Sound like a smart person thinking out loud</li>
-          <li>Anchor ideas in real examples and stories</li>
-          <li>Ask genuine questions — it's OK to not have the answer</li>
-          <li>Use the visual identity (coral, cardstock, typewriter)</li>
-          <li>Reference specific tools and people by name</li>
-          <li>Keep it practical — readers walk away with something</li>
-        </ul>
-      </div>
-      <div class="voice-col voice-dont">
-        <h4>✗ Never</h4>
-        <ul>
-          <li>Be corporate or stiff</li>
-          <li>Use "blue brain" AI imagery or stock photos</li>
-          <li>Hedge every opinion — have a point of view</li>
-          <li>Write clickbait — the substance IS the hook</li>
-          <li>Speak for Google — all thoughts are Jaclyn's own</li>
-          <li>Use Jaclyn's name as attribution on her own quotes</li>
-        </ul>
-      </div>
-    </div>
+  <!-- VISUAL DO/DONTS -->
+  <section id="visual-rules">
+    <div class="section-label">15 — Visual Do's & Don'ts</div>
+    <h2>Visual Do's & Don'ts</h2>
+    <p>Quick reference for visual execution across typography, canvas, and imagery styles.</p>
+    <table class="do-dont-table">
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Do This</th>
+          <th>Avoid This</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Typography</strong></td>
+          <td>Headers: Slab Serif (Charcoal). Body: Sans Serif (clean)</td>
+          <td>Generic sans headers, Times New Roman, goofy handwritten fonts</td>
+        </tr>
+        <tr>
+          <td><strong>The Canvas</strong></td>
+          <td>Gallery White (#FAF9F6) textured paper background for everything</td>
+          <td>Pure white digital backgrounds, dark mode, random colors</td>
+        </tr>
+        <tr>
+          <td><strong>Color Strategy</strong></td>
+          <td>Professional: Charcoal + Coral. Creative: full spectrum watercolor</td>
+          <td>Muddy colors, neon tech gradients, coral as bucket fill</td>
+        </tr>
+        <tr>
+          <td><strong>Illustration</strong></td>
+          <td>Marker & wash: bold ink outlines + loose watercolor splashes</td>
+          <td>Flat vectors, hyper-real 3D, pixel art</td>
+        </tr>
+        <tr>
+          <td><strong>Diagrams</strong></td>
+          <td>Ink & Accent: clean ink lines, coral highlight on main point only</td>
+          <td>Complex multicolored flowcharts, default PPT charts</td>
+        </tr>
+        <tr>
+          <td><strong>Screenshots</strong></td>
+          <td>Floating interface: screenshot on Gallery White + shadow + annotations</td>
+          <td>Raw screenshots pasted directly without context or shadows</td>
+        </tr>
+        <tr>
+          <td><strong>Photos</strong></td>
+          <td>Editorial collage: Polaroid frame, white border, coral stroke on caption</td>
+          <td>Photos filling full width, no borders or shadows</td>
+        </tr>
+        <tr>
+          <td><strong>Metaphors</strong></td>
+          <td>Vibrant concept: simple metaphor in ink + colorful watercolor explosion</td>
+          <td>Literal robot scenes, complex scenes, pencil sketches</td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 </main>
 
