@@ -1687,7 +1687,14 @@ is creative, metaphorical, and joyful.</code></pre>
       <div class="carousel-controls">
         <div class="carousel-mode-toggle">
           <button class="carousel-mode-btn active" id="mode-text" type="button">Text</button>
-          <button class="carousel-mode-btn" id="mode-json" type="button">JSON (Advanced)</button>
+          <button class="carousel-mode-btn" id="mode-url" type="button">URL</button>
+          <button class="carousel-mode-btn" id="mode-json" type="button">JSON</button>
+        </div>
+        <div id="url-input-row" style="display:none; margin-bottom: 0.75rem;">
+          <div style="display:flex; gap:0.5rem;">
+            <input type="url" id="carousel-url" placeholder="Paste a URL (Substack, LinkedIn, blog post...)" style="flex:1; padding:0.65rem 1rem; border-radius:12px; border:1px solid rgba(38,70,83,0.2); font-size:0.85rem; outline:none;" />
+            <button class="carousel-btn carousel-btn-primary" id="carousel-fetch" type="button" style="white-space:nowrap;">Fetch</button>
+          </div>
         </div>
         <textarea id="carousel-input" placeholder="Paste your post, tweet, or essay here. The tool will automatically break it into slides and pick the right templates.
 
@@ -2261,17 +2268,36 @@ The cost of building is trending to zero. This weekend I felt it.`;
     let inputMode = 'text'; // 'text' or 'json'
 
     // Mode toggle
-    document.getElementById('mode-text').addEventListener('click', () => {
-      inputMode = 'text';
-      document.getElementById('mode-text').classList.add('active');
-      document.getElementById('mode-json').classList.remove('active');
-      carouselInput.placeholder = 'Paste your post, tweet, or essay here. The tool will automatically break it into slides and pick the right templates.';
-    });
-    document.getElementById('mode-json').addEventListener('click', () => {
-      inputMode = 'json';
-      document.getElementById('mode-json').classList.add('active');
-      document.getElementById('mode-text').classList.remove('active');
-      carouselInput.placeholder = 'Paste carousel JSON here...';
+    const modeBtns = ['mode-text', 'mode-url', 'mode-json'];
+    const urlRow = document.getElementById('url-input-row');
+
+    function setMode(mode) {
+      inputMode = mode === 'url' ? 'text' : mode; // URL mode feeds into text mode after fetch
+      modeBtns.forEach(id => document.getElementById(id).classList.toggle('active', id === 'mode-' + mode));
+      urlRow.style.display = mode === 'url' ? 'block' : 'none';
+      if (mode === 'text') carouselInput.placeholder = 'Paste your post, tweet, or essay here...';
+      else if (mode === 'json') carouselInput.placeholder = 'Paste carousel JSON here...';
+      else if (mode === 'url') carouselInput.placeholder = 'Content will appear here after fetching...';
+    }
+
+    document.getElementById('mode-text').addEventListener('click', () => setMode('text'));
+    document.getElementById('mode-url').addEventListener('click', () => setMode('url'));
+    document.getElementById('mode-json').addEventListener('click', () => { inputMode = 'json'; setMode('json'); });
+
+    document.getElementById('carousel-fetch').addEventListener('click', async () => {
+      const url = document.getElementById('carousel-url').value.trim();
+      if (!url) { carouselStatus.textContent = '❌ Paste a URL first.'; return; }
+      carouselStatus.textContent = 'Fetching content from URL...';
+      try {
+        const resp = await fetch('/api/fetch-url?url=' + encodeURIComponent(url));
+        const data = await resp.json();
+        if (data.error) { carouselStatus.textContent = '❌ ' + data.error; return; }
+        carouselInput.value = data.text;
+        inputMode = 'text';
+        carouselStatus.textContent = '✅ Fetched ' + data.length + ' chars. Click Generate Slides.';
+      } catch (e) {
+        carouselStatus.textContent = '❌ Fetch failed: ' + e.message;
+      }
     });
 
     document.getElementById('carousel-load').addEventListener('click', () => {
