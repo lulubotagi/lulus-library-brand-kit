@@ -1876,8 +1876,10 @@ is creative, metaphorical, and joyful.</code></pre>
       const maxWidth = canvasSize - padding * 2;
       const quoteMarkHeight = 100;
 
+      const fontFamily = '"American Typewriter", "Courier New", serif';
+
       // Set quote body font BEFORE measuring for wrap
-      ctx.font = `${fontSize}px "Special Elite", serif`;
+      ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
 
@@ -1888,17 +1890,17 @@ is creative, metaphorical, and joyful.</code></pre>
       const totalHeight = quoteMarkHeight + textHeight;
       const firstBaseline = Math.max(200 + quoteMarkHeight + fontSize, (canvasSize * 0.48) - totalHeight / 2 + quoteMarkHeight + fontSize);
 
-      // Draw quote mark FIRST, then restore body font
+      // Draw quote mark
       ctx.save();
       ctx.fillStyle = colors.coral;
-      ctx.font = '120px "Special Elite", serif';
+      ctx.font = `120px ${fontFamily}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
       ctx.fillText('\u201C', canvasSize / 2, firstBaseline - fontSize * 0.8 - 20);
       ctx.restore();
 
       // Restore body font after quote mark
-      ctx.font = `${fontSize}px "Special Elite", serif`;
+      ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'alphabetic';
 
@@ -1968,8 +1970,6 @@ is creative, metaphorical, and joyful.</code></pre>
 
     const fontReady = document.fonts
       ? Promise.all([
-        document.fonts.load('120px "Special Elite"'),
-        document.fonts.load('36px "Special Elite"'),
         document.fonts.load('20px "Inter"')
       ])
       : Promise.resolve();
