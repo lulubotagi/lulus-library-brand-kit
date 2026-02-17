@@ -911,6 +911,44 @@
 
   .carousel-controls textarea:focus { border-color: var(--coral); }
 
+  .carousel-mode-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(38, 70, 83, 0.2);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .carousel-mode-btn {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .carousel-mode-btn.active {
+    background: var(--charcoal);
+    color: #fff;
+  }
+
+  .carousel-plan {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(38, 70, 83, 0.06);
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+    color: var(--ink);
+    white-space: pre-line;
+    line-height: 1.6;
+  }
+
   .carousel-buttons,
   .carousel-actions {
     display: flex;
@@ -1643,16 +1681,23 @@ is creative, metaphorical, and joyful.</code></pre>
   <section id="carousel">
     <div class="section-label">11 — Carousel Generator</div>
     <h2>Carousel Generator</h2>
-    <p>Paste slide JSON to generate a full carousel deck with Thursday Thoughts styling.</p>
+    <p>Paste your post text and we'll turn it into a branded carousel. Or use JSON for precise control.</p>
 
     <div class="carousel-generator">
       <div class="carousel-controls">
-        <textarea id="carousel-input" placeholder="Paste carousel JSON here..."></textarea>
+        <div class="carousel-mode-toggle">
+          <button class="carousel-mode-btn active" id="mode-text" type="button">Text</button>
+          <button class="carousel-mode-btn" id="mode-json" type="button">JSON (Advanced)</button>
+        </div>
+        <textarea id="carousel-input" placeholder="Paste your post, tweet, or essay here. The tool will automatically break it into slides and pick the right templates.
+
+Example: Just paste the full text of a LinkedIn post or newsletter excerpt..."></textarea>
         <div class="carousel-buttons">
           <button class="carousel-btn carousel-btn-secondary" id="carousel-load" type="button">Load Sample</button>
           <button class="carousel-btn carousel-btn-primary" id="carousel-generate" type="button">Generate Slides</button>
         </div>
-        <div class="carousel-status" id="carousel-status">Awaiting JSON input.</div>
+        <div class="carousel-plan" id="carousel-plan" style="display:none;"></div>
+        <div class="carousel-status" id="carousel-status">Paste your content and click Generate.</div>
       </div>
       <div class="carousel-preview">
         <canvas class="carousel-main-canvas" id="carousel-main" width="1080" height="1080" aria-label="Carousel slide preview"></canvas>
@@ -2193,16 +2238,175 @@ is creative, metaphorical, and joyful.</code></pre>
   ]
 }`;
 
+    const sampleText = `3-day weekend. One AI agent. Here's what happened.
+
+I built a Yosemite coloring book — from illustrations to cover design to KDP formatting. 50 coloring pages, submitted to Amazon, and built a standalone iPad flipbook viewer for my daughter. That's wild to me.
+
+I also shipped an interactive Canada trip planner with a Leaflet map and watercolor avatar pins for every family member. And my weeknight dinner app got a smart grocery list — pick your meals, it parses every ingredient, scales for your family size, and dedupes. One tap to copy and go.
+
+Then I formalized a complete brand identity for Thursday Thoughts on AI. Colors, typography, voice, image styles — all codified in one place so I can automate the monotonous visual work.
+
+Oh — and the kids and I also had a great weekend. Grandparents visited. Multiple playgrounds. Organized the bedroom. Cooked new recipes.
+
+It's amazing what you can get done when an AI is working behind the scenes.
+
+The cost of building is trending to zero. This weekend I felt it.`;
+
     const carouselInput = document.getElementById('carousel-input');
     const carouselMain = document.getElementById('carousel-main');
     const carouselThumbs = document.getElementById('carousel-thumbs');
     const carouselStatus = document.getElementById('carousel-status');
+    const carouselPlan = document.getElementById('carousel-plan');
     let slideCanvases = [];
+    let inputMode = 'text'; // 'text' or 'json'
+
+    // Mode toggle
+    document.getElementById('mode-text').addEventListener('click', () => {
+      inputMode = 'text';
+      document.getElementById('mode-text').classList.add('active');
+      document.getElementById('mode-json').classList.remove('active');
+      carouselInput.placeholder = 'Paste your post, tweet, or essay here. The tool will automatically break it into slides and pick the right templates.';
+    });
+    document.getElementById('mode-json').addEventListener('click', () => {
+      inputMode = 'json';
+      document.getElementById('mode-json').classList.add('active');
+      document.getElementById('mode-text').classList.remove('active');
+      carouselInput.placeholder = 'Paste carousel JSON here...';
+    });
 
     document.getElementById('carousel-load').addEventListener('click', () => {
-      carouselInput.value = sampleJSON;
+      carouselInput.value = inputMode === 'json' ? sampleJSON : sampleText;
       carouselStatus.textContent = 'Sample loaded. Click Generate Slides.';
     });
+
+    // ── Auto-splitter (ported from Python) ──
+    function splitSentences(text) {
+      return text.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).filter(s => s.trim());
+    }
+
+    function wordCount(text) {
+      return (text.match(/\b\w+\b/g) || []).length;
+    }
+
+    function pickSlideCount(words) {
+      if (words < 100) return 5;
+      if (words < 180) return 6;
+      if (words < 250) return 7;
+      return 8;
+    }
+
+    function hasNumbers(text) {
+      return /\b\d+(?:[\d,.]*)?(?:%|x)?\b/.test(text);
+    }
+
+    function extractNumbers(text) {
+      return (text.match(/\b\d+(?:[\d,.]*)?(?:%|x)?\b/g) || []);
+    }
+
+    function splitLines(text, maxWords) {
+      maxWords = maxWords || 8;
+      const words = text.split(/\s+/);
+      const lines = [];
+      for (let i = 0; i < words.length; i += maxWords) {
+        lines.push(words.slice(i, i + maxWords).join(' '));
+      }
+      return lines.slice(0, 5);
+    }
+
+    function ensureBracket(text) {
+      if (/\[.*\]/.test(text)) return text;
+      const words = text.match(/\b\w+\b/g) || [];
+      for (let i = words.length - 1; i >= 0; i--) {
+        if (words[i].length > 4) return text.replace(new RegExp('\\b' + words[i] + '\\b'), '[' + words[i] + ']');
+      }
+      if (words.length) return text.replace(new RegExp('\\b' + words[words.length-1] + '\\b'), '[' + words[words.length-1] + ']');
+      return text;
+    }
+
+    function autoSplit(rawText) {
+      const sentences = splitSentences(rawText);
+      const words = wordCount(rawText);
+      const slideCount = pickSlideCount(words);
+
+      const hookSentence = sentences[0] || rawText;
+      const closeSentence = sentences[sentences.length - 1] || rawText;
+      const middle = sentences.length > 2 ? sentences.slice(1, -1) : [];
+
+      const middleSlots = Math.max(0, slideCount - 2);
+      const chunks = [];
+      if (middleSlots && middle.length) {
+        const perChunk = Math.max(1, Math.floor(middle.length / middleSlots));
+        for (let i = 0; i < middleSlots; i++) {
+          const start = i * perChunk;
+          const end = i < middleSlots - 1 ? (i + 1) * perChunk : middle.length;
+          const chunk = middle.slice(start, end).join(' ').trim();
+          if (chunk) chunks.push(chunk);
+        }
+      }
+
+      const slides = [];
+
+      // Hook
+      const hookWords = hookSentence.split(/\s+/);
+      slides.push({
+        style: 'hook',
+        intro: hookWords.slice(0, 6).join(' '),
+        headline: hookWords.length > 6 ? [hookWords.slice(6).join(' ')] : [hookSentence],
+        headline_accent: [],
+        show_arrow: true
+      });
+
+      // Middle slides
+      chunks.forEach(chunk => {
+        if (hasNumbers(chunk)) {
+          const nums = extractNumbers(chunk);
+          const value = nums[0];
+          const rest = chunk.replace(value, '').trim();
+          slides.push({
+            style: 'big_number',
+            label: 'KEY STAT',
+            number: value,
+            description: rest || 'A number worth noticing.',
+            punchline: '',
+            punchline_accent: ''
+          });
+        } else if (chunk.split(/[.;]\s+/).length >= 4) {
+          const items = chunk.split(/[.;]\s+/).filter(s => s.trim());
+          slides.push({
+            style: 'bullet_list',
+            intro: items.slice(0, 1),
+            items: items.slice(1, 5),
+            closing: ['And that\'s just'],
+            closing_accent: ['the beginning.']
+          });
+        } else {
+          slides.push({
+            style: 'body',
+            label: 'INSIGHT',
+            headline: splitLines(chunk, 8),
+            body: splitLines(chunk, 14)
+          });
+        }
+      });
+
+      // Quote closer
+      slides.push({
+        style: 'pull_quote',
+        quote: ensureBracket(closeSentence)
+      });
+
+      return slides;
+    }
+
+    function formatPlan(slides) {
+      return 'Slide plan (' + slides.length + ' slides):\n' + slides.map((s, i) =>
+        '  ' + (i+1) + '. [' + s.style.toUpperCase() + '] ' +
+        (s.style === 'hook' ? (s.headline||[])[0]||'' :
+         s.style === 'pull_quote' ? (s.quote||'').slice(0,40)+'...' :
+         s.style === 'big_number' ? s.number :
+         (s.headline||[])[0]||'')
+      ).join('\n');
+    }
 
     function drawLightBg(ctx) {
       if (textureLoaded) { ctx.drawImage(textureImg, 0, 0, CS, CS); }
@@ -2432,12 +2636,23 @@ is creative, metaphorical, and joyful.</code></pre>
     }
 
     document.getElementById('carousel-generate').addEventListener('click', async () => {
-      let data;
-      try { data = JSON.parse(carouselInput.value); }
-      catch (e) { carouselStatus.textContent = '❌ Invalid JSON: ' + e.message; return; }
+      const raw = carouselInput.value.trim();
+      if (!raw) { carouselStatus.textContent = '❌ Paste some content first.'; return; }
 
-      const slides = data.slides || [];
-      if (!slides.length) { carouselStatus.textContent = '❌ No slides found.'; return; }
+      let slides;
+      if (inputMode === 'json') {
+        let data;
+        try { data = JSON.parse(raw); }
+        catch (e) { carouselStatus.textContent = '❌ Invalid JSON: ' + e.message; return; }
+        slides = data.slides || [];
+        carouselPlan.style.display = 'none';
+      } else {
+        slides = autoSplit(raw);
+        carouselPlan.textContent = formatPlan(slides);
+        carouselPlan.style.display = 'block';
+      }
+
+      if (!slides.length) { carouselStatus.textContent = '❌ No slides generated.'; return; }
 
       carouselStatus.textContent = 'Generating ' + slides.length + ' slides...';
       await textureReady;
