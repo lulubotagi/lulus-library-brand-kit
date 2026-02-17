@@ -2329,7 +2329,13 @@ The cost of building is trending to zero. This weekend I felt it.`;
       const slideCount = pickSlideCount(words);
 
       const hookSentence = sentences[0] || rawText;
-      const closeSentence = sentences[sentences.length - 1] || rawText;
+      // Pick the punchiest closing line: prefer short sentences from the last third
+      const lastThird = sentences.slice(Math.max(1, Math.floor(sentences.length * 0.66)));
+      const closeSentence = lastThird.reduce((best, s) => {
+        // Prefer sentences under 80 chars that feel like conclusions
+        const score = (s.length < 80 ? 100 : 0) + (s.length < 50 ? 50 : 0) + (s.length < 120 ? 20 : 0);
+        return score > best.score ? { text: s, score } : best;
+      }, { text: sentences[sentences.length - 1] || rawText, score: 0 }).text;
       const middle = sentences.length > 2 ? sentences.slice(1, -1) : [];
 
       const middleSlots = Math.max(0, slideCount - 2);
@@ -2430,6 +2436,41 @@ The cost of building is trending to zero. This weekend I felt it.`;
       ctx.textAlign = 'left';
     }
 
+    function canvasWrap(ctx, text, font, maxWidth) {
+      ctx.font = font;
+      const words = text.split(/\s+/);
+      const lines = [];
+      let current = '';
+      words.forEach(word => {
+        const test = current ? current + ' ' + word : word;
+        if (ctx.measureText(test).width > maxWidth && current) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = test;
+        }
+      });
+      if (current) lines.push(current);
+      return lines;
+    }
+
+    function wrapAndDraw(ctx, textLines, x, y, gap, font, fill, maxWidth) {
+      ctx.font = font; ctx.fillStyle = fill; ctx.textBaseline = 'top';
+      const wrapped = [];
+      textLines.forEach(line => {
+        canvasWrap(ctx, line, font, maxWidth).forEach(wl => wrapped.push(wl));
+      });
+      wrapped.forEach(line => { ctx.fillText(line, x, y); y += gap; });
+      return { y, lineCount: wrapped.length };
+    }
+
+    function countWrapped(ctx, textLines, font, maxWidth) {
+      ctx.font = font;
+      let count = 0;
+      textLines.forEach(line => { count += canvasWrap(ctx, line, font, maxWidth).length; });
+      return count;
+    }
+
     function drawLeftLines(ctx, lines, x, y, gap, font, fill) {
       ctx.font = font; ctx.fillStyle = fill; ctx.textBaseline = 'top';
       lines.forEach(line => { ctx.fillText(line, x, y); y += gap; });
@@ -2443,15 +2484,21 @@ The cost of building is trending to zero. This weekend I felt it.`;
       const intro = s.intro || '';
       const hl = s.headline || [];
       const ha = s.headline_accent || [];
+      const maxW = CW;
+      const hlFont = '72px "Roboto Slab", serif';
+
       const introH = intro ? 40 : 0;
-      const blockH = introH + (introH ? 30 : 0) + (hl.length + ha.length) * 88;
+      const hlCount = countWrapped(ctx, hl, hlFont, maxW);
+      const haCount = countWrapped(ctx, ha, hlFont, maxW);
+      const blockH = introH + (introH ? 30 : 0) + (hlCount + haCount) * 88;
       let y = M + (CH - blockH) / 2;
       if (intro) {
         ctx.font = '30px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.textBaseline = 'top';
         ctx.fillText(intro, M, y); y += 40 + 30;
       }
-      y = drawLeftLines(ctx, hl, M, y, 88, '72px "Roboto Slab", serif', DARK_TXT);
-      drawLeftLines(ctx, ha, M, y, 88, '72px "Roboto Slab", serif', CORAL);
+      const hlR = wrapAndDraw(ctx, hl, M, y, 88, hlFont, DARK_TXT, maxW);
+      y = hlR.y;
+      wrapAndDraw(ctx, ha, M, y, 88, hlFont, CORAL, maxW);
       if (s.show_arrow) {
         ctx.font = '44px "Inter", sans-serif'; ctx.fillStyle = CORAL;
         ctx.fillText('→', CS - 120, CS - 140);
@@ -2516,21 +2563,25 @@ The cost of building is trending to zero. This weekend I felt it.`;
       const label = (s.label || '').toUpperCase();
       const hl = s.headline || [];
       const body = s.body || [];
+      const maxW = CW; // 920px usable width
 
       ctx.textBaseline = 'top';
       const labelH = label ? 30 : 0;
       if (label) { ctx.font = '22px "Inter", sans-serif'; ctx.fillStyle = CORAL; ctx.fillText(label, M, M); }
 
-      const hlH = hl.length * 64;
-      const bodyH = body.length * 44;
+      // Word-wrap headline and body to fit canvas
+      const hlWrapped = countWrapped(ctx, hl, '52px "Roboto Slab", serif', maxW);
+      const bodyWrapped = countWrapped(ctx, body, '32px "Inter", sans-serif', maxW);
+      const hlH = hlWrapped * 64;
+      const bodyH = bodyWrapped * 44;
       const blockH = hlH + 30 + bodyH;
       const topAfterLabel = M + labelH + 20;
       const availH = CS - FOOTER_H - topAfterLabel;
       let y = topAfterLabel + (availH - blockH) / 2;
 
-      y = drawLeftLines(ctx, hl, M, y, 64, '52px "Roboto Slab", serif', INK);
-      y += 30;
-      drawLeftLines(ctx, body, M, y, 44, '32px "Inter", sans-serif', INK_SEC);
+      const hlResult = wrapAndDraw(ctx, hl, M, y, 64, '52px "Roboto Slab", serif', INK, maxW);
+      y = hlResult.y + 30;
+      wrapAndDraw(ctx, body, M, y, 44, '32px "Inter", sans-serif', INK_SEC, maxW);
       drawFooter(ctx, false);
     }
 
