@@ -6,7 +6,7 @@
 <title>Thursday Thoughts on AI — Brand Kit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ---- PASSWORD GATE ---- */
   .gate {
@@ -1889,8 +1889,8 @@ is creative, metaphorical, and joyful.</code></pre>
       const lineHeight = Math.round(fontSize * 1.25);
       const maxWidth = canvasSize - padding * 2;
 
-      // Use AmericanTypewriter (iOS/macOS system font name variants)
-      const fontFamily = '"AmericanTypewriter-Bold", "American Typewriter", "Courier New", serif';
+      // Zilla Slab: proportional slab serif (closest web font to American Typewriter)
+      const fontFamily = '"Zilla Slab", "American Typewriter", serif';
 
       // Set quote body font BEFORE measuring for wrap
       ctx.font = `bold ${fontSize}px ${fontFamily}`;
@@ -1991,7 +1991,9 @@ is creative, metaphorical, and joyful.</code></pre>
     const fontReady = document.fonts
       ? Promise.all([
         document.fonts.load('20px "Inter"'),
-        document.fonts.load('22px "Roboto Slab"')
+        document.fonts.load('22px "Roboto Slab"'),
+        document.fonts.load('bold 48px "Zilla Slab"'),
+        document.fonts.load('700 48px "Zilla Slab"')
       ])
       : Promise.resolve();
 
