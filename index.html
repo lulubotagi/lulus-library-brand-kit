@@ -6,7 +6,7 @@
 <title>Thursday Thoughts on AI — Brand Kit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   /* ---- PASSWORD GATE ---- */
   .gate {
@@ -1857,119 +1857,110 @@ is creative, metaphorical, and joyful.</code></pre>
       return { lines, spaceWidth, fontSize };
     }
 
-    function drawBackground() {
-      // Warm cardstock base
-      ctx.fillStyle = colors.background;
-      ctx.fillRect(0, 0, canvasSize, canvasSize);
+    // ── Preload cardstock texture ──
+    const textureImg = new Image();
+    textureImg.src = 'cardstock_texture.png';
+    let textureLoaded = false;
+    textureImg.onload = () => { textureLoaded = true; };
 
-      // Heavy paper grain — visible fiber marks like the Python version
-      ctx.fillStyle = 'rgba(45, 42, 40, 0.04)';
-      for (let i = 0; i < 12000; i++) {
-        const x = Math.random() * canvasSize;
-        const y = Math.random() * canvasSize;
-        ctx.fillRect(x, y, 1, 1);
-      }
-      // Horizontal scratch/fiber lines
-      ctx.strokeStyle = 'rgba(45, 42, 40, 0.03)';
-      ctx.lineWidth = 0.5;
-      for (let i = 0; i < 200; i++) {
-        const y = Math.random() * canvasSize;
-        const x = Math.random() * canvasSize * 0.7;
-        const len = 20 + Math.random() * 80;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + len, y + (Math.random() - 0.5) * 2);
-        ctx.stroke();
-      }
-    }
+    // ── Exact Python quotable.py values ──
+    const S = canvasSize; // 1080
+    const fontSize = Math.round(S * 0.042);   // 45
+    const lineHeight = Math.round(fontSize * 1.65);  // 74
+    const quoteMarkSize = Math.round(S * 0.15);  // 162
+    const margin = Math.round(S * 0.12);  // 130
+    const maxTextWidth = S - margin * 2;
+    const brandFontSize = Math.round(S * 0.02);  // 22
+    const fontFamily = '"Special Elite", serif';
 
     function drawQuoteText(text) {
-      const padding = 120;
-      const fontSize = 48;
-      const lineHeight = Math.round(fontSize * 1.25);
-      const maxWidth = canvasSize - padding * 2;
+      // Background: texture or solid
+      if (textureLoaded) {
+        ctx.drawImage(textureImg, 0, 0, S, S);
+      } else {
+        ctx.fillStyle = colors.background;
+        ctx.fillRect(0, 0, S, S);
+      }
 
-      // Zilla Slab: proportional slab serif (closest web font to American Typewriter)
-      const fontFamily = '"Zilla Slab", "American Typewriter", serif';
-
-      // Set quote body font BEFORE measuring for wrap
-      ctx.font = `bold ${fontSize}px ${fontFamily}`;
+      // Set font for measuring
+      ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textAlign = 'left';
-      ctx.textBaseline = 'alphabetic';
+      ctx.textBaseline = 'top';  // PIL uses top baseline
 
       const words = parseHighlightedWords(text);
-      const { lines, spaceWidth } = wrapLines(words, maxWidth, fontSize);
-      const textHeight = lines.length * lineHeight;
+      const { lines, spaceWidth } = wrapLines(words, maxTextWidth, fontSize);
+      const textBlockHeight = lines.length * lineHeight;
 
-      // Vertically center the text block (quote mark + text + footer)
-      const quoteMarkGap = 30;
-      const quoteMarkSize = 80;
-      const blockHeight = quoteMarkSize + quoteMarkGap + textHeight;
-      const blockTop = (canvasSize - 140) / 2 - blockHeight / 2; // 140 = footer zone
-      const firstBaseline = blockTop + quoteMarkSize + quoteMarkGap + fontSize;
+      // Vertical center (Python: start_y = (size - block) // 2 - size*0.03)
+      const startY = Math.round((S - textBlockHeight) / 2 - S * 0.03);
 
-      // ── Quote mark (big coral curly quotes) ──
+      // Quote mark (Python: positioned at start_y - size*0.1)
       ctx.save();
       ctx.fillStyle = colors.coral;
-      ctx.font = `bold 180px ${fontFamily}`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'alphabetic';
-      ctx.fillText('\u201C', canvasSize / 2, blockTop + quoteMarkSize);
+      ctx.font = `${quoteMarkSize}px ${fontFamily}`;
+      ctx.textBaseline = 'top';
+      const qmW = ctx.measureText('\u201C').width;
+      ctx.fillText('\u201C', S / 2 - qmW / 2, startY - Math.round(S * 0.1));
       ctx.restore();
 
-      // ── Body text ──
-      ctx.font = `bold ${fontSize}px ${fontFamily}`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'alphabetic';
+      // Body text
+      ctx.font = `${fontSize}px ${fontFamily}`;
+      ctx.textBaseline = 'top';
 
-      lines.forEach((line, index) => {
-        const lineY = firstBaseline + index * lineHeight;
-        const startX = (canvasSize - line.width) / 2;
-        let x = startX;
-        const placements = [];
+      lines.forEach((line, i) => {
+        const ly = startY + i * lineHeight;
+        const lineText = line.words.map(w => w.text).join(' ');
+        const lineW = ctx.measureText(lineText).width;
+        const lineX = S / 2 - lineW / 2;
 
-        line.words.forEach((word, wordIndex) => {
-          placements.push({ ...word, x, y: lineY });
-          x += word.width + (wordIndex < line.words.length - 1 ? spaceWidth : 0);
+        // Highlights (Python: rgba(255,94,126, 110/255) ≈ 0.43, rounded rect)
+        let cursor = 0;
+        line.words.forEach(word => {
+          const before = lineText.substring(0, cursor);
+          const beforeW = before ? ctx.measureText(before).width : 0;
+
+          if (word.highlight) {
+            const wordW = ctx.measureText(word.text).width;
+            const padX = 6;
+            const hx = lineX + beforeW - padX;
+            const hHeight = Math.round(lineHeight * 0.75);
+            const hTop = ly - Math.round(lineHeight * 0.12);
+
+            ctx.fillStyle = 'rgba(255, 94, 126, 0.43)';
+            ctx.beginPath();
+            ctx.roundRect(hx, hTop, wordW + padX * 2, hHeight, 3);
+            ctx.fill();
+          }
+          cursor += word.text.length + 1;
         });
 
-        // ── Highlights: saturated pink, generous padding ──
-        ctx.fillStyle = 'rgba(255, 182, 193, 0.55)';
-        placements.forEach(word => {
-          if (!word.highlight) return;
-          const metrics = ctx.measureText(word.text);
-          const ascent = metrics.actualBoundingBoxAscent || fontSize * 0.8;
-          const descent = metrics.actualBoundingBoxDescent || fontSize * 0.2;
-          const pad = 8;
-          ctx.fillRect(word.x - pad, word.y - ascent - pad, word.width + pad * 2, ascent + descent + pad * 2);
-        });
-
-        // ── Ink: dark warm charcoal ──
-        ctx.fillStyle = '#1a1815';
-        placements.forEach(word => {
-          ctx.fillText(word.text, word.x, word.y);
-        });
+        // Ink: rgb(45,42,40) — exact Python INK_BLACK
+        ctx.fillStyle = 'rgb(45, 42, 40)';
+        ctx.font = `${fontSize}px ${fontFamily}`;
+        ctx.fillText(lineText, lineX, ly);
       });
 
-      // ── Footer: pinned to bottom ──
-      const dividerY = canvasSize - 100;
-      ctx.strokeStyle = colors.coral;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(canvasSize / 2 - 60, dividerY);
-      ctx.lineTo(canvasSize / 2 + 60, dividerY);
-      ctx.stroke();
-
-      ctx.fillStyle = '#8a8078';
-      ctx.font = '22px "Roboto Slab", serif';
+      // Bottom branding (Python: brand_y = size - size*0.06)
+      const brandY = S - Math.round(S * 0.06);
+      ctx.font = `${brandFontSize}px "Roboto Slab", serif`;
+      ctx.fillStyle = 'rgb(160, 150, 140)';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText('Thursday Thoughts on AI', canvasSize / 2, dividerY + 16);
+      ctx.fillText('Thursday Thoughts on AI', S / 2, brandY);
+
+      // Coral line above branding (Python: line_y = brand_y - size*0.02)
+      const lineY = brandY - Math.round(S * 0.02);
+      const lineHalf = Math.round(S * 0.08);
+      ctx.strokeStyle = colors.coral;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(S / 2 - lineHalf, lineY);
+      ctx.lineTo(S / 2 + lineHalf, lineY);
+      ctx.stroke();
     }
 
     function renderQuote(text) {
       const safeText = text && text.trim() ? text : defaultQuote;
-      drawBackground();
       drawQuoteText(safeText);
     }
 
@@ -1988,16 +1979,21 @@ is creative, metaphorical, and joyful.</code></pre>
       link.click();
     });
 
+    // Wait for both fonts and texture before first render
     const fontReady = document.fonts
       ? Promise.all([
-        document.fonts.load('20px "Inter"'),
-        document.fonts.load('22px "Roboto Slab"'),
-        document.fonts.load('bold 48px "Zilla Slab"'),
-        document.fonts.load('700 48px "Zilla Slab"')
+        document.fonts.load(`${fontSize}px "Special Elite"`),
+        document.fonts.load(`${quoteMarkSize}px "Special Elite"`),
+        document.fonts.load(`${brandFontSize}px "Roboto Slab"`),
       ])
       : Promise.resolve();
 
-    fontReady.then(() => renderQuote(defaultQuote));
+    const textureReady = new Promise(resolve => {
+      if (textureImg.complete) resolve();
+      else { textureImg.onload = () => { textureLoaded = true; resolve(); }; }
+    });
+
+    Promise.all([fontReady, textureReady]).then(() => renderQuote(defaultQuote));
   }
 </script>
 
