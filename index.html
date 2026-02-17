@@ -1879,25 +1879,14 @@ is creative, metaphorical, and joyful.</code></pre>
 
     function drawQuoteText(text) {
       const padding = 140;
+      const fontSize = 42;
+      const lineHeight = Math.round(fontSize * 1.35);
       const maxWidth = canvasSize - padding * 2;
-      const maxTextHeight = canvasSize * 0.55; // max space for text block
       const quoteMarkHeight = 100;
 
-      // Auto-scale font size to fit
-      let fontSize = 48;
-      let lines, spaceWidth, lineHeight, textHeight;
       const words = parseHighlightedWords(text);
-
-      while (fontSize >= 20) {
-        lineHeight = Math.round(fontSize * 1.35);
-        ctx.font = `${fontSize}px "Special Elite", serif`;
-        const result = wrapLines(words, maxWidth, fontSize);
-        lines = result.lines;
-        spaceWidth = result.spaceWidth;
-        textHeight = lines.length * lineHeight;
-        if (textHeight <= maxTextHeight) break;
-        fontSize -= 2;
-      }
+      const { lines, spaceWidth } = wrapLines(words, maxWidth, fontSize);
+      const textHeight = lines.length * lineHeight;
 
       ctx.font = `${fontSize}px "Special Elite", serif`;
       ctx.textAlign = 'left';
