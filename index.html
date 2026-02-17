@@ -2323,19 +2323,75 @@ The cost of building is trending to zero. This weekend I felt it.`;
       return text;
     }
 
+    function pickBestQuote(sentences) {
+      if (!sentences.length) return '';
+      if (sentences.length === 1) return sentences[0];
+
+      // Skip the first sentence (that's the hook, not the quote)
+      const candidates = sentences.slice(1);
+
+      const scored = candidates.map((s, i) => {
+        let score = 0;
+        const lower = s.toLowerCase();
+        const len = s.length;
+        const position = i / candidates.length; // 0 = early, 1 = late
+
+        // === LENGTH: sweet spot is 30-90 chars ===
+        if (len >= 30 && len <= 90) score += 80;
+        else if (len >= 20 && len <= 120) score += 40;
+        else if (len > 150) score -= 40;
+        else if (len < 15) score -= 20;
+
+        // === POSITION: later sentences carry more weight (conclusions) ===
+        score += Math.round(position * 60);
+
+        // === STANDALONE WISDOM: reads like a truth, not a fact ===
+        // Declarative statements that work without context
+        if (/^(the |it'?s |this |that'?s |what |there'?s |everything )/i.test(s)) score += 40;
+        if (/^(i think|i believe|i'?ve (learned|realized|found)|the (real|truth|thing|point|cost|power))/i.test(s)) score += 50;
+
+        // === EMOTIONAL / INSIGHT WORDS ===
+        const insightWords = ['amazing', 'wild', 'powerful', 'beautiful', 'incredible', 'surprising',
+          'actually', 'really', 'finally', 'zero', 'everything', 'nothing', 'never', 'always',
+          'felt', 'changed', 'shifted', 'realized', 'discovered', 'learned', 'matters',
+          'trending', 'future', 'possible', 'impossible', 'different'];
+        insightWords.forEach(w => { if (lower.includes(w)) score += 15; });
+
+        // === CONTRAST / TENSION ===
+        if (/\b(but|yet|however|not .* but|instead|despite|without)\b/i.test(s)) score += 25;
+        if (/\b(isn't|aren't|doesn't|won't|can't|shouldn't)\b/i.test(s)) score += 10;
+
+        // === PENALTY: transitional / listy / too specific ===
+        if (/^(i also|and |oh |also |plus |then )/i.test(s)) score -= 60;
+        if (/^(here'?s|check out|you can|click|visit|read more)/i.test(s)) score -= 80;
+        // Lists of specific items aren't quotable
+        if ((s.match(/,/g) || []).length >= 3) score -= 30;
+        // Too many proper nouns = too specific
+        if ((s.match(/[A-Z][a-z]{2,}/g) || []).length >= 3) score -= 20;
+        // URLs aren't quotes
+        if (/https?:\/\//.test(s)) score -= 100;
+
+        // === RHYTHM: short punchy sentences with periods hit harder ===
+        const wordCount = s.split(/\s+/).length;
+        if (wordCount >= 5 && wordCount <= 15) score += 30;
+        if (wordCount >= 8 && wordCount <= 12) score += 20; // ideal tweet-length
+
+        return { text: s, score };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      return scored[0].text;
+    }
+
     function autoSplit(rawText) {
       const sentences = splitSentences(rawText);
       const words = wordCount(rawText);
       const slideCount = pickSlideCount(words);
 
       const hookSentence = sentences[0] || rawText;
-      // Pick the punchiest closing line: prefer short sentences from the last third
-      const lastThird = sentences.slice(Math.max(1, Math.floor(sentences.length * 0.66)));
-      const closeSentence = lastThird.reduce((best, s) => {
-        // Prefer sentences under 80 chars that feel like conclusions
-        const score = (s.length < 80 ? 100 : 0) + (s.length < 50 ? 50 : 0) + (s.length < 120 ? 20 : 0);
-        return score > best.score ? { text: s, score } : best;
-      }, { text: sentences[sentences.length - 1] || rawText, score: 0 }).text;
+
+      // Smart quote picker: scan ALL sentences, score on "quotability"
+      const closeSentence = pickBestQuote(sentences);
       const middle = sentences.length > 2 ? sentences.slice(1, -1) : [];
 
       const middleSlots = Math.max(0, slideCount - 2);
