@@ -244,6 +244,9 @@
                 <button class="template-btn" data-template="stackedcolor">Stacked Color</button>
                 <button class="template-btn" data-template="gradientdream">Gradient Dream</button>
                 <button class="template-btn" data-template="playful">Playful Pop</button>
+                <button class="template-btn" data-template="boldcrown">Her Crown</button>
+                <button class="template-btn" data-template="rainbowletters">Rainbow Letters</button>
+                <button class="template-btn" data-template="darkselective">Dark Selective</button>
             </div>
 
             <div class="quote-generator">
@@ -902,33 +905,32 @@
         // ===== TEMPLATE 9: STACKED COLOR - VERTICAL RAINBOW =====
         function renderStackedColor(text) {
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#FFFACD';
+            ctx.fillStyle = '#1A1A1A';
             ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
             const words = text.replace(/\[|\]/g, '').split(/\s+/);
-            ctx.font = `bold 85px Arial Black, sans-serif`;
             ctx.textBaseline = 'top';
 
-            const colors = ['#E91E63', '#FF6F00', '#FFD700', '#00BCD4', '#2196F3', '#9C27B0', '#F44336', '#4CAF50'];
+            const colors = ['#FF1493', '#FF6F00', '#FFD700', '#00CED1', '#FF00FF', '#00FF7F', '#FF4500', '#00BFFF'];
             
-            let currentY = 150;
-            const lineHeight = 110;
-            let wordIdx = 0;
+            // Calculate font size to fit all words
+            const maxWords = words.length;
+            const fontSize = Math.max(40, Math.min(80, Math.floor((CANVAS_SIZE - 200) / maxWords)));
+            
+            let currentY = 100;
+            const lineHeight = fontSize + 30;
 
-            // Write 1-2 words per line
-            while (wordIdx < words.length) {
-                const word1 = words[wordIdx];
-                ctx.fillStyle = colors[wordIdx % colors.length];
-                ctx.font = `bold 85px Arial Black, sans-serif`;
+            words.forEach((word, idx) => {
+                ctx.fillStyle = colors[idx % colors.length];
+                ctx.font = `bold ${fontSize}px Arial Black, sans-serif`;
                 ctx.textAlign = 'center';
-                ctx.fillText(word1, CANVAS_SIZE / 2, currentY);
+                ctx.fillText(word, CANVAS_SIZE / 2, currentY);
                 currentY += lineHeight;
-                wordIdx++;
-            }
+            });
 
             // Footer
-            ctx.font = `20px Georgia, serif`;
-            ctx.fillStyle = '#666666';
+            ctx.font = `18px Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
             ctx.textAlign = 'center';
             ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 40);
         }
@@ -1024,6 +1026,150 @@
             ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 40);
         }
 
+        // ===== TEMPLATE 12: HER CROWN - BOLD ARTISTIC STYLE =====
+        function renderBoldCrown(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            const words = text.replace(/\[|\]/g, '').split(/\s+/);
+            const colors = ['#FF1493', '#FF6347', '#FFD700', '#FF00FF', '#FF4500'];
+            
+            // Large bold text, 2-3 words per line
+            let currentY = 200;
+            let wordIdx = 0;
+            const lineHeight = 140;
+
+            while (wordIdx < words.length) {
+                let line = '';
+                let lineWords = 0;
+                while (wordIdx < words.length && lineWords < 3) {
+                    line += (line ? ' ' : '') + words[wordIdx];
+                    wordIdx++;
+                    lineWords++;
+                }
+
+                ctx.fillStyle = colors[(wordIdx - 1) % colors.length];
+                ctx.font = `bold 100px Impact, Arial Black, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText(line, CANVAS_SIZE / 2, currentY);
+                currentY += lineHeight;
+            }
+
+            // Footer
+            ctx.font = `20px Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 50);
+        }
+
+        // ===== TEMPLATE 13: RAINBOW LETTERS - EACH LETTER DIFFERENT COLOR =====
+        function renderRainbowLetters(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#2A2A2A';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            const cleanText = text.replace(/\[|\]/g, '');
+            const letterColors = ['#FF1493', '#FF6347', '#FFD700', '#00CED1', '#00FF7F', '#9370DB', '#FF4500', '#00BFFF'];
+            
+            // Create words and wrap
+            const words = cleanText.split(/\s+/);
+            let currentY = 200;
+            let currentLine = '';
+            const lines = [];
+
+            words.forEach(word => {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const testW = ctx.measureText(testLine).width;
+                if (testW > 800 && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            });
+            if (currentLine) lines.push(currentLine);
+
+            // Draw each line, each letter different color
+            lines.forEach(line => {
+                const lineWords = line.split(/\s+/);
+                let x = CANVAS_SIZE / 2 - 400; // rough center, adjust as needed
+                
+                lineWords.forEach(word => {
+                    for (let i = 0; i < word.length; i++) {
+                        ctx.fillStyle = letterColors[(Math.random() * letterColors.length) | 0];
+                        ctx.font = `bold 64px Impact, Arial Black, sans-serif`;
+                        ctx.textAlign = 'left';
+                        ctx.textBaseline = 'top';
+                        ctx.fillText(word[i], x, currentY);
+                        x += ctx.measureText(word[i]).width + 2;
+                    }
+                    x += ctx.measureText(' ').width;
+                });
+
+                currentY += 90;
+            });
+
+            // Footer
+            ctx.font = `20px Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 50);
+        }
+
+        // ===== TEMPLATE 14: DARK SELECTIVE - DARK BG WITH COLORFUL WORDS =====
+        function renderDarkSelective(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#1A1A1A';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            const allWords = parseHighlighted(text);
+            
+            // Wrap with highlight info preserved
+            let currentY = 200;
+            let wordIdx = 0;
+            const lineHeight = 85;
+            const colors = ['#FF1493', '#FFD700', '#00CED1', '#00FF7F', '#FF6347', '#9370DB'];
+
+            while (wordIdx < allWords.length && currentY < CANVAS_SIZE - 100) {
+                let lineWords = [];
+                let lineW = 0;
+
+                while (wordIdx < allWords.length) {
+                    const w = ctx.measureText(allWords[wordIdx].text).width;
+                    if (lineW + w > 800 && lineWords.length > 0) break;
+                    lineWords.push(allWords[wordIdx]);
+                    lineW += w + 20;
+                    wordIdx++;
+                }
+
+                let x = (CANVAS_SIZE - lineW) / 2;
+                ctx.textBaseline = 'top';
+
+                lineWords.forEach((word, idx) => {
+                    ctx.font = `bold 64px Arial Black, sans-serif`;
+                    
+                    if (word.highlight) {
+                        ctx.fillStyle = colors[idx % colors.length];
+                    } else {
+                        ctx.fillStyle = '#FFFFFF';
+                    }
+
+                    ctx.textAlign = 'left';
+                    ctx.fillText(word.text, x, currentY);
+                    x += ctx.measureText(word.text).width + 20;
+                });
+
+                currentY += lineHeight;
+            }
+
+            // Footer
+            ctx.font = `18px Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 40);
+        }
+
         // Main render function that calls the appropriate template
         function renderQuote(text) {
             switch(currentTemplate) {
@@ -1038,6 +1184,9 @@
                 case 'stackedcolor': renderStackedColor(text); break;
                 case 'gradientdream': renderGradientDream(text); break;
                 case 'playful': renderPlayful(text); break;
+                case 'boldcrown': renderBoldCrown(text); break;
+                case 'rainbowletters': renderRainbowLetters(text); break;
+                case 'darkselective': renderDarkSelective(text); break;
             }
         }
 
