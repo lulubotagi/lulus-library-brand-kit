@@ -1,2846 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thursday Thoughts on AI — Brand Kit</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Slab:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
-<style>
-  /* ---- PASSWORD GATE ---- */
-  .gate {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #264653;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-family: 'Inter', -apple-system, sans-serif;
-  }
-  .gate.hidden { display: none; }
-  .gate h1 {
-    font-family: 'Roboto Slab', 'Times New Roman', serif;
-    color: #fff;
-    font-size: 1.6rem;
-    margin-bottom: 0.25rem;
-  }
-  .gate h1 span { color: #FF5E7E; }
-  .gate p { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 1.5rem; }
-  .gate-form { display: flex; gap: 0.5rem; }
-  .gate-form input {
-    padding: 0.65rem 1rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.06);
-    color: #fff;
-    font-size: 0.9rem;
-    outline: none;
-    width: 220px;
-  }
-  .gate-form input:focus { border-color: #FF5E7E; }
-  .gate-form button {
-    padding: 0.65rem 1.25rem;
-    border-radius: 8px;
-    border: none;
-    background: #FF5E7E;
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .gate-form button:hover { opacity: 0.85; }
-  .gate-error { color: #FF5E7E; font-size: 0.8rem; margin-top: 0.75rem; opacity: 0; transition: opacity 0.3s; }
-  .gate-error.show { opacity: 1; }
-  body.locked { overflow: hidden; }
-
-  :root {
-    --coral: #FF5E7E;
-    --coral-light: rgba(255, 94, 126, 0.12);
-    --coral-mid: rgba(255, 94, 126, 0.2);
-    --charcoal: #264653;
-    --teal: #2A9D8F;
-    --gold: #E9C46A;
-    --violet: #9D85B1;
-    --canvas: #FAF9F6;
-    --ink: var(--charcoal);
-    --muted: rgba(38, 70, 83, 0.7);
-    --muted-light: rgba(38, 70, 83, 0.35);
-    --font-display: 'Roboto Slab', 'Times New Roman', serif;
-    --font-body: 'Inter', -apple-system, sans-serif;
-    --font-mono: 'Special Elite', 'Courier New', monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; font-size: 16px; }
-
-  body {
-    font-family: var(--font-body);
-    color: var(--ink);
-    background: var(--canvas);
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ---- NAV ---- */
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 260px;
-    height: 100vh;
-    background: var(--charcoal);
-    color: #fff;
-    padding: 2.5rem 1.5rem;
-    overflow-y: auto;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-  }
-
-  nav .brand {
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 0.25rem;
-    line-height: 1.3;
-  }
-
-  nav .brand span { color: var(--coral); }
-
-  nav .subtitle {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    margin-bottom: 2rem;
-  }
-
-  nav .nav-section {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  nav a {
-    display: block;
-    color: rgba(255,255,255,0.6);
-    text-decoration: none;
-    font-size: 0.85rem;
-    padding: 0.4rem 0.75rem;
-    border-radius: 6px;
-    transition: all 0.2s;
-    margin-bottom: 2px;
-  }
-
-  nav a:hover, nav a.active {
-    color: #fff;
-    background: rgba(255,255,255,0.08);
-  }
-
-  nav a.active { border-left: 2px solid var(--coral); padding-left: calc(0.75rem - 2px); }
-
-  nav .nav-footer {
-    margin-top: auto;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    font-size: 0.72rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  nav .status-badge {
-    display: inline-block;
-    background: var(--coral);
-    color: #fff;
-    font-size: 0.6rem;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  /* ---- MOBILE BAR ---- */
-  .mobile-bar {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 56px;
-    padding: 0 1.25rem;
-    background: var(--charcoal);
-    color: #fff;
-    z-index: 1000;
-  }
-
-  .mobile-brand {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #fff;
-    line-height: 1;
-  }
-
-  .mobile-brand span { color: var(--coral); }
-
-  .mobile-menu-toggle {
-    background: none;
-    border: none;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    cursor: pointer;
-  }
-
-  .mobile-menu-toggle .bar {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: #fff;
-    border-radius: 999px;
-    transition: transform 0.25s ease, opacity 0.2s ease;
-  }
-
-  .mobile-menu-toggle .bar + .bar { margin-top: 0; }
-
-  body.nav-open .mobile-menu-toggle .bar:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  body.nav-open .mobile-menu-toggle .bar:nth-child(2) {
-    opacity: 0;
-  }
-
-  body.nav-open .mobile-menu-toggle .bar:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  /* ---- MAIN ---- */
-  main {
-    margin-left: 260px;
-    min-height: 100vh;
-  }
-
-  /* ---- HERO ---- */
-  .hero {
-    background: var(--canvas);
-    padding: 6rem 4rem 5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '\201C';
-    font-family: var(--font-display);
-    font-size: 20rem;
-    color: var(--coral);
-    opacity: 0.08;
-    position: absolute;
-    top: -2rem;
-    right: 2rem;
-    line-height: 1;
-    pointer-events: none;
-  }
-
-  .hero h1 {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--charcoal);
-    line-height: 1.15;
-    max-width: 650px;
-    margin-bottom: 1rem;
-  }
-
-  .hero h1 em {
-    font-style: italic;
-    color: var(--coral);
-  }
-
-  .hero .tagline {
-    font-size: 1.15rem;
-    color: var(--muted);
-    max-width: 550px;
-    line-height: 1.6;
-  }
-
-  .hero .meta {
-    margin-top: 2rem;
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .hero .meta-item {
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  .hero .meta-item strong {
-    display: block;
-    font-size: 1.3rem;
-    color: var(--charcoal);
-    font-weight: 600;
-  }
-
-  /* ---- SECTIONS ---- */
-  section {
-    padding: 4rem;
-    max-width: 900px;
-    border-bottom: 1px solid rgba(38, 70, 83, 0.12);
-  }
-
-  section:last-child { border-bottom: none; }
-
-  .section-label {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--coral);
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-  }
-
-  section h2 {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--charcoal);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-  }
-
-  section h3 {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--charcoal);
-    margin-top: 2.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  section p {
-    margin-bottom: 1rem;
-    color: var(--ink);
-    font-size: 0.95rem;
-    max-width: 680px;
-  }
-
-  section ul, section ol {
-    margin-bottom: 1.25rem;
-    padding-left: 1.25rem;
-  }
-
-  section li {
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-    line-height: 1.6;
-  }
-
-  /* ---- COLOR SWATCHES ---- */
-  .color-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .swatch {
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--canvas);
-    box-shadow: 0 1px 3px rgba(38, 70, 83, 0.12);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .swatch:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(38, 70, 83, 0.2);
-  }
-
-  .swatch-color {
-    height: 80px;
-    position: relative;
-  }
-
-  .swatch-info {
-    padding: 0.75rem;
-  }
-
-  .swatch-name {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--charcoal);
-  }
-
-  .swatch-hex {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-
-  .swatch-usage {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 0.25rem;
-  }
-
-  .copied-toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--charcoal);
-    color: #fff;
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    pointer-events: none;
-    z-index: 999;
-  }
-
-  .copied-toast.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ---- TYPOGRAPHY SHOWCASE ---- */
-  .type-showcase {
-    margin: 1.5rem 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .type-item {
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: rgba(38, 70, 83, 0.05);
-  }
-
-  .type-meta {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 0.75rem;
-  }
-
-  .type-playfair {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--charcoal);
-    line-height: 1.2;
-  }
-
-  .type-inter {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--ink);
-    line-height: 1.7;
-    max-width: 500px;
-  }
-
-  .type-special {
-    font-family: var(--font-mono);
-    font-size: 1.2rem;
-    color: var(--ink);
-    line-height: 1.6;
-  }
-
-  /* ---- WORDMARK ---- */
-  .wordmark-card {
-    padding: 1.75rem;
-    border-radius: 16px;
-    background: rgba(38, 70, 83, 0.04);
-    border: 1px solid rgba(38, 70, 83, 0.1);
-  }
-
-  .wordmark-stack,
-  .wordmark-row {
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--charcoal);
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .wordmark-stack {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-    font-size: 2.1rem;
-    line-height: 1.05;
-  }
-
-  .wordmark-row {
-    font-size: 1.6rem;
-    margin-top: 1.25rem;
-  }
-
-  .brushstroke {
-    position: relative;
-    display: inline-block;
-    color: #fff;
-    padding: 0.1em 0.45em;
-    margin: 0 0.1em;
-    background: var(--coral);
-    border-radius: 18px 12px 20px 10px;
-    transform: rotate(-2deg) skewX(-4deg);
-    box-shadow: 0 6px 14px rgba(255, 94, 126, 0.35);
-  }
-
-  .brushstroke::before {
-    content: '';
-    position: absolute;
-    inset: 12% 4%;
-    border-radius: inherit;
-    background: rgba(255,255,255,0.12);
-    mix-blend-mode: screen;
-    pointer-events: none;
-  }
-
-  .wordmark-note {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: var(--muted);
-    max-width: 640px;
-  }
-
-  .wordmark-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 12px;
-    background: #fff;
-    padding: 0.75rem;
-    box-shadow: 0 12px 24px rgba(38, 70, 83, 0.12);
-  }
-
-  .wordmark-approx {
-    margin-top: 1.5rem;
-  }
-
-  .wordmark-approx-title {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.75rem;
-  }
-
-  .brand-assets {
-    margin-top: 2rem;
-    padding: 1.75rem;
-    border-radius: 16px;
-    background: rgba(38, 70, 83, 0.03);
-    border: 1px solid rgba(38, 70, 83, 0.08);
-  }
-
-  .brand-assets-title {
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--charcoal);
-    margin-bottom: 1.25rem;
-  }
-
-  .asset-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .asset-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .asset-preview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    border-radius: 16px;
-    background: rgba(38, 70, 83, 0.04);
-    border: 1px solid rgba(38, 70, 83, 0.08);
-    padding: 1rem;
-  }
-
-  .asset-wordmark {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  .asset-portrait {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 10px 18px rgba(38, 70, 83, 0.2);
-  }
-
-  .download-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .link-pill.is-small {
-    padding: 0.35rem 0.85rem;
-    font-size: 0.72rem;
-    gap: 0.35rem;
-  }
-
-  /* ---- IMAGE STYLES ---- */
-  .image-style-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .image-style-card {
-    padding: 1.25rem;
-    border-radius: 12px;
-    background: rgba(38, 70, 83, 0.05);
-    border: 1px solid rgba(38, 70, 83, 0.08);
-  }
-
-  .image-style-title {
-    font-weight: 700;
-    color: var(--charcoal);
-    margin-bottom: 0.35rem;
-  }
-
-  .image-style-meta {
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 0.6rem;
-  }
-
-  .image-style-card ul {
-    margin-top: 0.75rem;
-  }
-
-  /* ---- ANNOTATION KIT ---- */
-  .annotation-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .annotation-card {
-    padding: 1.2rem;
-    border-radius: 12px;
-    background: rgba(38, 70, 83, 0.04);
-    border: 1px solid rgba(38, 70, 83, 0.08);
-  }
-
-  .annotation-title {
-    font-weight: 600;
-    color: var(--charcoal);
-    margin-bottom: 0.4rem;
-  }
-
-  /* ---- VISUAL DO/DONT TABLE ---- */
-  .do-dont-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1.5rem 0 0;
-    font-size: 0.88rem;
-  }
-
-  .do-dont-table th,
-  .do-dont-table td {
-    text-align: left;
-    padding: 0.9rem;
-    border-bottom: 1px solid rgba(38, 70, 83, 0.12);
-    vertical-align: top;
-  }
-
-  .do-dont-table th {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-  }
-
-  .do-dont-table td strong {
-    color: var(--charcoal);
-  }
-
-  /* ---- PROMPT BLOCK ---- */
-  .prompt-block {
-    background: rgba(38, 70, 83, 0.06);
-    border-radius: 12px;
-    padding: 1.25rem;
-    overflow-x: auto;
-    border: 1px solid rgba(38, 70, 83, 0.12);
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-
-  /* ---- BELIEF CARDS ---- */
-  .beliefs-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .belief-card {
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: rgba(38, 70, 83, 0.05);
-    border-left: 3px solid var(--coral);
-    transition: background 0.2s;
-  }
-
-  .belief-card:hover { background: var(--coral-light); }
-
-  .belief-num {
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    color: var(--coral);
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-
-  .belief-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--charcoal);
-    margin-bottom: 0.4rem;
-  }
-
-  .belief-desc {
-    font-size: 0.88rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* ---- VOICE TABLE ---- */
-  .voice-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .voice-col { padding: 1.25rem; border-radius: 12px; }
-  .voice-do { background: rgba(42, 157, 143, 0.08); border: 1px solid rgba(42, 157, 143, 0.2); }
-  .voice-dont { background: rgba(255, 94, 126, 0.1); border: 1px solid rgba(255, 94, 126, 0.2); }
-
-  .voice-identity {
-    margin: 1.25rem 0 1.75rem;
-    padding: 1.25rem;
-    border-radius: 12px;
-    background: rgba(255, 94, 126, 0.12);
-    border: 1px solid rgba(255, 94, 126, 0.2);
-  }
-
-  .voice-identity strong {
-    display: block;
-    font-family: var(--font-display);
-    font-size: 1rem;
-    margin-bottom: 0.35rem;
-    color: var(--charcoal);
-  }
-
-  .voice-col h4 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-  }
-
-  .voice-do h4 { color: var(--teal); }
-  .voice-dont h4 { color: var(--coral); }
-
-  .voice-col li {
-    font-size: 0.88rem;
-    margin-bottom: 0.4rem;
-    line-height: 1.5;
-  }
-
-  /* ---- QUOTE GENERATOR ---- */
-  .quote-generator {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-    margin: 1.5rem 0 2rem;
-  }
-
-  .quote-canvas-panel {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-  }
-
-  .quote-canvas {
-    width: 100%;
-    max-width: 540px;
-    height: auto;
-    border-radius: 14px;
-    box-shadow: 0 12px 24px rgba(38, 70, 83, 0.12);
-    background: #F5F0E8;
-    display: block;
-  }
-
-  .quote-controls {
-    flex: 1;
-    min-width: 280px;
-    background: rgba(38, 70, 83, 0.04);
-    border: 1px solid rgba(38, 70, 83, 0.08);
-    border-radius: 14px;
-    padding: 1.5rem;
-  }
-
-  .quote-controls textarea {
-    width: 100%;
-    min-height: 180px;
-    resize: vertical;
-    padding: 0.85rem 1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(38, 70, 83, 0.2);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: var(--ink);
-    background: #fff;
-    outline: none;
-  }
-
-  .quote-controls textarea:focus { border-color: var(--coral); }
-
-  .quote-help {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin: 0.5rem 0 1.25rem;
-  }
-
-  .quote-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .quote-btn {
-    padding: 0.65rem 1.5rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  }
-
-  .quote-btn-primary {
-    background: var(--coral);
-    color: #fff;
-    border: none;
-    box-shadow: 0 8px 16px rgba(255, 94, 126, 0.25);
-  }
-
-  .quote-btn-secondary {
-    background: transparent;
-    color: var(--coral);
-    border: 1.5px solid var(--coral);
-  }
-
-  .quote-btn:hover { transform: translateY(-1px); }
-
-  /* ---- CAROUSEL GENERATOR ---- */
-  .carousel-generator {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-    margin: 1.5rem 0 2rem;
-  }
-
-  .carousel-controls {
-    flex: 1;
-    min-width: 280px;
-    background: rgba(38, 70, 83, 0.04);
-    border: 1px solid rgba(38, 70, 83, 0.08);
-    border-radius: 14px;
-    padding: 1.5rem;
-  }
-
-  .carousel-controls textarea {
-    width: 100%;
-    min-height: 260px;
-    resize: vertical;
-    padding: 0.85rem 1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(38, 70, 83, 0.2);
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--ink);
-    background: #fff;
-    outline: none;
-  }
-
-  .carousel-controls textarea:focus { border-color: var(--coral); }
-
-  .carousel-mode-toggle {
-    display: flex;
-    gap: 0;
-    margin-bottom: 0.75rem;
-    border: 1px solid rgba(38, 70, 83, 0.2);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  .carousel-mode-btn {
-    flex: 1;
-    padding: 0.5rem 1rem;
-    border: none;
-    background: transparent;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .carousel-mode-btn.active {
-    background: var(--charcoal);
-    color: #fff;
-  }
-
-  .carousel-plan {
-    margin-top: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: rgba(38, 70, 83, 0.06);
-    border-radius: 10px;
-    font-size: 0.8rem;
-    font-family: var(--font-mono);
-    color: var(--ink);
-    white-space: pre-line;
-    line-height: 1.6;
-  }
-
-  .carousel-buttons,
-  .carousel-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-  }
-
-  .carousel-btn {
-    padding: 0.65rem 1.5rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  }
-
-  .carousel-btn-primary {
-    background: var(--coral);
-    color: #fff;
-    border: none;
-    box-shadow: 0 8px 16px rgba(255, 94, 126, 0.25);
-  }
-
-  .carousel-btn-secondary {
-    background: transparent;
-    color: var(--coral);
-    border: 1.5px solid var(--coral);
-  }
-
-  .carousel-btn:hover { transform: translateY(-1px); }
-
-  .carousel-status {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 0.75rem;
-  }
-
-  .carousel-preview {
-    flex: 1.2;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .carousel-main-canvas {
-    width: 100%;
-    max-width: 540px;
-    height: auto;
-    border-radius: 14px;
-    box-shadow: 0 12px 24px rgba(38, 70, 83, 0.12);
-    background: #F5F0E8;
-    display: block;
-    align-self: center;
-  }
-
-  .carousel-thumbs {
-    display: flex;
-    gap: 0.75rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-  }
-
-  .carousel-thumb {
-    border: 1px solid rgba(38, 70, 83, 0.2);
-    background: #fff;
-    border-radius: 12px;
-    padding: 0.35rem;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .carousel-thumb.active {
-    border-color: var(--coral);
-    box-shadow: 0 8px 18px rgba(255, 94, 126, 0.2);
-  }
-
-  .carousel-thumb canvas {
-    width: 120px;
-    height: auto;
-    border-radius: 8px;
-    display: block;
-  }
-
-  @media (max-width: 900px) {
-    .quote-generator { flex-direction: column; }
-    .quote-controls { width: 100%; }
-    .carousel-generator { flex-direction: column; }
-    .carousel-controls, .carousel-preview { width: 100%; }
-  }
-
-  /* ---- CONTENT STRUCTURE ---- */
-  .structure-flow {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin: 1.5rem 0;
-  }
-
-  .structure-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem 0;
-    border-left: 2px solid var(--muted-light);
-    padding-left: 1.5rem;
-    position: relative;
-  }
-
-  .structure-step::before {
-    content: '';
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--coral);
-    position: absolute;
-    left: -6px;
-    top: 1.25rem;
-  }
-
-  .structure-step-num {
-    font-family: var(--font-display);
-    font-size: 0.7rem;
-    color: var(--coral);
-    font-weight: 700;
-    min-width: 2rem;
-  }
-
-  .structure-step-title {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--charcoal);
-  }
-
-  .structure-step-desc {
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin-top: 0.2rem;
-  }
-
-  /* ---- TOOLKIT TABLE ---- */
-  .toolkit-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .tool-card {
-    padding: 1.25rem;
-    border-radius: 12px;
-    background: rgba(38, 70, 83, 0.05);
-    border: 1px solid rgba(38, 70, 83, 0.1);
-  }
-
-  .tool-card.live { border-left: 3px solid var(--teal); }
-  .tool-card.planned { border-left: 3px solid var(--muted-light); }
-
-  .tool-status {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 600;
-    margin-bottom: 0.35rem;
-  }
-
-  .tool-card.live .tool-status { color: var(--teal); }
-  .tool-card.planned .tool-status { color: var(--muted); }
-
-  .tool-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--charcoal);
-    margin-bottom: 0.25rem;
-  }
-
-  .tool-desc {
-    font-size: 0.82rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  /* ---- LINKS ---- */
-  .links-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin: 1.5rem 0;
-  }
-
-  .link-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.25rem;
-    border-radius: 100px;
-    background: rgba(38, 70, 83, 0.05);
-    color: var(--charcoal);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-  }
-
-  .link-pill:hover {
-    border-color: var(--coral);
-    background: var(--coral-light);
-  }
-
-  .link-pill svg { width: 16px; height: 16px; opacity: 0.5; }
-
-  /* ---- PLATFORM TONE ---- */
-  .platform-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .platform-card {
-    padding: 1.25rem;
-    border-radius: 12px;
-    background: rgba(38, 70, 83, 0.05);
-  }
-
-  .platform-name {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--charcoal);
-    margin-bottom: 0.35rem;
-  }
-
-  .platform-tone {
-    font-size: 0.82rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  /* ---- MOBILE ---- */
-  @media (max-width: 900px) {
-    .mobile-bar { display: flex; }
-
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      padding: calc(56px + 1.5rem) 1.5rem 1.5rem;
-      transform: translateY(-100%);
-      transition: transform 0.3s ease;
-      z-index: 900;
-    }
-
-    body.nav-open nav { transform: translateY(0); }
-
-    nav .nav-footer { display: none; }
-
-    main {
-      margin-left: 0;
-      padding-top: 56px;
-    }
-
-    .hero { padding: 3rem 1.5rem; }
-    .hero h1 { font-size: 2rem; }
-
-    section { padding: 2.5rem 1.5rem; }
-    section { scroll-margin-top: 72px; }
-
-    .color-grid { grid-template-columns: repeat(3, 1fr); }
-    .voice-grid, .toolkit-grid, .platform-grid, .image-style-grid, .annotation-grid { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 500px) {
-    .color-grid { grid-template-columns: repeat(2, 1fr); }
-    .hero .meta { flex-direction: column; gap: 1rem; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lulu's Library — Brand Kit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #FAF9F6;
+            color: #264653;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 60px 40px;
+            text-align: center;
+            background: #FAF9F6;
+            border-bottom: 1px solid rgba(45, 80, 22, 0.1);
+        }
+
+        .logo {
+            max-width: 200px;
+            margin: 0 auto 30px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2D5016;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #2D5016;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .quote-generator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .quote-canvas-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .quote-canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .quote-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #2D5016;
+        }
+
+        .quote-help {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .quote-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .quote-btn-primary {
+            background: #2D5016;
+            color: white;
+        }
+
+        .quote-btn-primary:hover {
+            background: #1f3610;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+        }
+
+        .quote-btn-secondary {
+            background: #f0f0f0;
+            color: #264653;
+        }
+
+        .quote-btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(45, 80, 22, 0.1);
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .quote-generator {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            header {
+                padding: 40px 20px;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+        }
+    </style>
 </head>
-<body class="locked">
-
-<div class="gate" id="gate">
-  <h1>Thursday Thoughts<span>.</span></h1>
-  <p>Brand Kit — Private Access</p>
-  <div class="gate-form">
-    <input type="password" id="gate-pw" placeholder="Enter password" autofocus>
-    <button onclick="checkGate()">Enter</button>
-  </div>
-  <div class="gate-error" id="gate-error">Incorrect password</div>
-</div>
-
-<div class="mobile-bar" id="mobile-bar">
-  <div class="mobile-brand">Thursday Thoughts<span>.</span></div>
-  <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="site-nav">
-    <span class="bar"></span>
-    <span class="bar"></span>
-    <span class="bar"></span>
-  </button>
-</div>
-
-<nav id="site-nav">
-  <div class="brand">Thursday Thoughts<span>.</span></div>
-  <div class="subtitle">Brand Kit</div>
-
-  <div class="nav-section">Foundation</div>
-  <a href="#mission">Mission & Audience</a>
-  <a href="#beliefs">Core Beliefs</a>
-
-  <div class="nav-section">Voice</div>
-  <a href="#voice">Voice & Tone</a>
-  <a href="#platforms">Platform Guide</a>
-
-  <div class="nav-section">Visual</div>
-  <a href="#colors">Color Palette</a>
-  <a href="#typography">Typography</a>
-  <a href="#wordmark">Logo & Wordmark</a>
-  <a href="#image-styles">Image Styles</a>
-  <a href="#annotation">Annotation Kit</a>
-  <a href="#quotable">Quote Cards</a>
-  <a href="#carousel">Carousel Generator</a>
-
-  <div class="nav-section">Content</div>
-  <a href="#structure">Post Structure</a>
-  <a href="#pillars">Content Pillars</a>
-
-  <div class="nav-section">Resources</div>
-  <a href="#toolkit">Toolkit</a>
-  <a href="#links">Key Links</a>
-  <a href="#visual-rules">Visual Do's & Don'ts</a>
-
-  <div class="nav-footer">
-    <span class="status-badge">Draft</span><br><br>
-    Last updated: Feb 16, 2026<br>
-    Maintained by Lulubot 🤖
-  </div>
-</nav>
-
-<main>
-  <!-- HERO -->
-  <div class="hero">
-    <h1>Thursday Thoughts <em>on AI</em></h1>
-    <p class="tagline">The canonical brand guide for Jaclyn Konzelmann's weekly newsletter — for agents, collaborators, and future hires.</p>
-    <div class="meta">
-      <div class="meta-item"><strong>3,000+</strong>Subscribers</div>
-      <div class="meta-item"><strong>Weekly</strong>Cadence</div>
-      <div class="meta-item"><strong>Since 2025</strong>Active</div>
-    </div>
-  </div>
-
-  <!-- MISSION -->
-  <section id="mission">
-    <div class="section-label">01 — Foundation</div>
-    <h2>Mission & Audience</h2>
-    <p>Help smart, curious professionals navigate the AI revolution through real-world product insights — not hype, not theory, but observations from someone actively building at the frontier.</p>
-
-    <h3>Who Is Jaclyn?</h3>
-    <p>Director of Product Management at Google Labs. 15+ years of experience from YC to Google. Shipped Gemini API, Google AI Studio, Project Mariner, Mixboard, Pomelli, and Opal. Mom of 3. Side-project obsessed. Writes to think.</p>
-
-    <h3>Target Audience</h3>
-    <ul>
-      <li>Product managers (aspiring and experienced) navigating AI</li>
-      <li>Builders and engineers curious about product thinking</li>
-      <li>Tech leaders separating signal from hype</li>
-      <li>AI-curious professionals who want practical, not theoretical</li>
-    </ul>
-  </section>
-
-  <!-- BELIEFS -->
-  <section id="beliefs">
-    <div class="section-label">02 — Core Beliefs</div>
-    <h2>The Intellectual DNA</h2>
-    <p>These are the ideas Jaclyn returns to again and again. They define what Thursday Thoughts stands for.</p>
-
-    <div class="beliefs-grid">
-      <div class="belief-card">
-        <div class="belief-num">01</div>
-        <div class="belief-title">Build to Learn</div>
-        <div class="belief-desc">The best way to understand anything is to build it. Prototyping > theorizing. Side projects are how you develop intuition.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">02</div>
-        <div class="belief-title">Agency Over Intelligence</div>
-        <div class="belief-desc">In a world where AI augments intelligence, the scarce resource is the drive to act. Agency is the new currency.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">03</div>
-        <div class="belief-title">The PM Role Is Being Rewritten</div>
-        <div class="belief-desc">PMs are becoming builders, not just spec writers. The old way was documentation to prevent failure; the new way is prototyping to discover possibility.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">04</div>
-        <div class="belief-title">Disposable Software, Enduring Platforms</div>
-        <div class="belief-desc">The cost of building is trending to zero. The hard part is deciding what's worth keeping. Community, trust, and ownership are the new moats.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">05</div>
-        <div class="belief-title">Prompting Is the New Literacy</div>
-        <div class="belief-desc">A vague input doesn't just produce a bad output — it produces an exponential expansion of badness. Precision matters more than ever.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">06</div>
-        <div class="belief-title">Hyper-Customization vs. Shared Language</div>
-        <div class="belief-desc">There's a tension between apps built "just for you" and the community value of shared tools. The answer is probably both.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">07</div>
-        <div class="belief-title">Experiment Relentlessly</div>
-        <div class="belief-desc">Don't wait for permission. Don't wait for the perfect idea. Ship something, learn, iterate.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- VOICE -->
-  <section id="voice">
-    <div class="section-label">03 — Voice & Tone</div>
-    <h2>How Jaclyn Writes</h2>
-    <p><strong>Conversational but substantial.</strong> Not academic, not dumbed down. Like a smart friend who happens to work at Google explaining something over coffee.</p>
-    <p><strong>Thinking out loud.</strong> She doesn't pretend to have all the answers. Posts often frame tensions and open questions rather than prescriptive advice.</p>
-    <p><strong>Story-driven.</strong> Almost every post anchors abstract ideas in concrete personal anecdotes.</p>
-    <p><strong>Opinionated but generous.</strong> Strong takes that respect the reader's intelligence.</p>
-    <p><strong>Practical.</strong> Even philosophical posts land with actionable takeaways.</p>
-
-    <div class="voice-identity">
-      <strong>The Artist-Director</strong>
-      <p>We explain technical complexity with the clarity of a Product Director and the creativity of a Studio Artist.</p>
-    </div>
-
-    <h3>Style Notes</h3>
-    <ul>
-      <li>Mix of short punchy lines and longer exploratory ones</li>
-      <li>Loves em-dashes — uses them to insert asides</li>
-      <li>Parenthetical personality (like this)</li>
-      <li>Occasional <strong>bold</strong> for emphasis on key phrases</li>
-      <li>Rarely uses exclamation marks (saves them for genuine excitement)</li>
-      <li>Headers are often questions or provocative statements</li>
-    </ul>
-
-    <div class="voice-grid">
-      <div class="voice-col voice-do">
-        <h4>✓ Do</h4>
-        <ul>
-          <li>Write like you're thinking through a problem</li>
-          <li>Use personal stories and real examples</li>
-          <li>Ask genuine questions</li>
-          <li>Say "I don't know" when true</li>
-          <li>Reference specific products/tools by name</li>
-          <li>Use everyday metaphors</li>
-          <li>Show the messy process</li>
-        </ul>
-      </div>
-      <div class="voice-col voice-dont">
-        <h4>✗ Don't</h4>
-        <ul>
-          <li>Write like you've solved everything</li>
-          <li>Use hypothetical corporate scenarios</li>
-          <li>Ask rhetorical questions you already answered</li>
-          <li>Pretend to be omniscient</li>
-          <li>Stay vague and abstract</li>
-          <li>Use jargon without explaining it</li>
-          <li>Only share wins</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- PLATFORMS -->
-  <section id="platforms">
-    <div class="section-label">04 — Platform Guide</div>
-    <h2>Tone by Platform</h2>
-    <div class="platform-grid">
-      <div class="platform-card">
-        <div class="platform-name">Substack (Posts)</div>
-        <div class="platform-tone">Thoughtful, exploratory, story-driven. 800–1500 words. The anchor content — everything else ripples from here.</div>
-      </div>
-      <div class="platform-card">
-        <div class="platform-name">Substack (Notes)</div>
-        <div class="platform-tone">Shorter, punchier, more casual. Question-posing. Teasers and standalone observations.</div>
-      </div>
-      <div class="platform-card">
-        <div class="platform-name">X / Twitter</div>
-        <div class="platform-tone">Sharp observations, hot takes, conversational, sometimes playful. Standalone insights that work without context.</div>
-      </div>
-      <div class="platform-card">
-        <div class="platform-name">LinkedIn</div>
-        <div class="platform-tone">Slightly more polished, professional framing, still authentic. Often newsletter promo + standalone insights.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COLORS -->
-  <section id="colors">
-    <div class="section-label">05 — Visual Identity</div>
-    <h2>Color Palette</h2>
-    <p>Click any swatch to copy its hex code.</p>
-    <div class="color-grid">
-      <div class="swatch" onclick="copyColor('#FF5E7E', this)">
-        <div class="swatch-color" style="background: #FF5E7E;"></div>
-        <div class="swatch-info">
-          <div class="swatch-name">Neon Coral</div>
-          <div class="swatch-hex">#FF5E7E</div>
-          <div class="swatch-usage">The Hero — buttons, links, highlights</div>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Lulu's Library">
         </div>
-      </div>
-      <div class="swatch" onclick="copyColor('#264653', this)">
-        <div class="swatch-color" style="background: #264653;"></div>
-        <div class="swatch-info">
-          <div class="swatch-name">Dark Charcoal</div>
-          <div class="swatch-hex">#264653</div>
-          <div class="swatch-usage">The Ink — all text, outlines</div>
-        </div>
-      </div>
-      <div class="swatch" onclick="copyColor('#2A9D8F', this)">
-        <div class="swatch-color" style="background: #2A9D8F;"></div>
-        <div class="swatch-info">
-          <div class="swatch-name">Deep Teal</div>
-          <div class="swatch-hex">#2A9D8F</div>
-          <div class="swatch-usage">Cool/Tech — data, future, structure</div>
-        </div>
-      </div>
-      <div class="swatch" onclick="copyColor('#E9C46A', this)">
-        <div class="swatch-color" style="background: #E9C46A;"></div>
-        <div class="swatch-info">
-          <div class="swatch-name">Harvest Gold</div>
-          <div class="swatch-hex">#E9C46A</div>
-          <div class="swatch-usage">Warm/Value — ideas, optimism</div>
-        </div>
-      </div>
-      <div class="swatch" onclick="copyColor('#9D85B1', this)">
-        <div class="swatch-color" style="background: #9D85B1;"></div>
-        <div class="swatch-info">
-          <div class="swatch-name">Muted Violet</div>
-          <div class="swatch-hex">#9D85B1</div>
-          <div class="swatch-usage">Creative/Magic — imagination</div>
-        </div>
-      </div>
-      <div class="swatch" onclick="copyColor('#FAF9F6', this)">
-        <div class="swatch-color" style="background: #FAF9F6; border-bottom: 1px solid rgba(38, 70, 83, 0.12);"></div>
-        <div class="swatch-info">
-          <div class="swatch-name">Gallery White</div>
-          <div class="swatch-hex">#FAF9F6</div>
-          <div class="swatch-usage">The Canvas — background for everything</div>
-        </div>
-      </div>
-    </div>
-    <ul>
-      <li><strong>Professional mode:</strong> Dark Charcoal + Neon Coral accents only</li>
-      <li><strong>Creative mode:</strong> Full spectrum watercolor (Teal, Gold, Violet + Coral)</li>
-      <li><strong>Never use pure black (#000000).</strong></li>
-    </ul>
-  </section>
+        <h1>Lulu's Library</h1>
+        <p class="tagline">Coloring books, stories, and creative journeys for all ages.</p>
+    </header>
 
-  <!-- TYPOGRAPHY -->
-  <section id="typography">
-    <div class="section-label">06 — Typography</div>
-    <h2>Type System</h2>
-    <div class="type-showcase">
-      <div class="type-item">
-        <div class="type-meta">Roboto Slab — Headlines & Titles</div>
-        <div class="type-playfair">The Disposable Software Paradox</div>
-      </div>
-      <div class="type-item">
-        <div class="type-meta">Inter — Body Text & UI</div>
-        <div class="type-inter">We are living through a tectonic shift. The cost of building software is plummeting. With agents becoming increasingly capable, we are entering an era where almost anything can be built, by anyone, almost instantly.</div>
-      </div>
-      <div class="type-item">
-        <div class="type-meta">Special Elite — Quote Cards & Typewriter Aesthetic</div>
-        <div class="type-special">The best way to understand what to build is to get your hands dirty.</div>
-      </div>
-    </div>
-  </section>
+    <main>
+        <section id="quotable">
+            <h2>Quotable Generator</h2>
+            <div class="quote-generator">
+                <div class="quote-canvas-panel">
+                    <canvas class="quote-canvas" id="quote-canvas" width="1080" height="1080"></canvas>
+                </div>
+                <div class="quote-controls">
+                    <textarea id="quote-input" placeholder="Enter your quote here..."></textarea>
+                    <div class="quote-help">Wrap words in [brackets] to highlight them in forest green</div>
+                    <div class="quote-buttons">
+                        <button class="quote-btn quote-btn-primary" id="quote-generate">Generate</button>
+                        <button class="quote-btn quote-btn-secondary" id="quote-download">Download PNG</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-  <!-- WORDMARK -->
-  <section id="wordmark">
-    <div class="section-label">07 — Logo & Wordmark</div>
-    <h2>Logo & Wordmark</h2>
-    <p>The brushstroke behind "Thoughts" is the signature brand device. It should feel hand-painted, organic, and slightly imperfect.</p>
-    <div class="wordmark-card">
-      <img src="assets/wordmark-1600.png" alt="Thursday Thoughts on AI wordmark" class="wordmark-image" />
-      <div class="wordmark-note">Wordmark: Roboto Slab Bold in Dark Charcoal. "Thoughts" in white on a hand-painted Neon Coral brushstroke.</div>
-    </div>
-    <div class="brand-assets">
-      <div class="brand-assets-title">Brand Assets — Download</div>
-      <div class="asset-grid">
-        <div class="asset-card">
-          <div class="asset-preview">
-            <img src="assets/wordmark-1600.png" alt="Thursday Thoughts on AI wordmark" class="asset-wordmark" />
-          </div>
-          <div class="download-links">
-            <a class="link-pill is-small" href="assets/wordmark-1600.png" download>Web (1600px)</a>
-            <a class="link-pill is-small" href="assets/wordmark-3200.png" download>Print 300dpi (3200px)</a>
-            <a class="link-pill is-small" href="assets/wordmark-original.jpg" download>Original</a>
-          </div>
-        </div>
-        <div class="asset-card">
-          <div class="asset-preview">
-            <img src="assets/portrait-1080.jpg" alt="Thursday Thoughts portrait" class="asset-portrait" />
-          </div>
-          <div class="download-links">
-            <a class="link-pill is-small" href="assets/portrait-1080.jpg" download>Web (1080px)</a>
-            <a class="link-pill is-small" href="assets/portrait-2160.png" download>Print 300dpi (2160px)</a>
-            <a class="link-pill is-small" href="assets/portrait-original.jpg" download>Original</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <footer>
+        <p>Lulu's Library Brand Kit • Made with 💚</p>
+    </footer>
 
-  <!-- IMAGE STYLES -->
-  <section id="image-styles">
-    <div class="section-label">08 — Image Styles</div>
-    <h2>Image Styles</h2>
-    <p>Four distinct visual modes. Pick the style that best matches the content type and keep the execution consistent.</p>
-    <div class="image-style-grid">
-      <div class="image-style-card">
-        <div class="image-style-meta">Style 1</div>
-        <div class="image-style-title">Ink & Accent (Diagrams)</div>
-        <p>Use for hard concepts, frameworks, and strategy. Smart, clear, authoritative.</p>
-        <ul>
-          <li>Clean ink lines and simple shapes</li>
-          <li>Coral watercolor highlight on the single most important node</li>
-          <li>Keep the rest restrained and readable</li>
-        </ul>
-      </div>
-      <div class="image-style-card">
-        <div class="image-style-meta">Style 2</div>
-        <div class="image-style-title">Floating Interface (Screenshots)</div>
-        <p>Use for product demos, tool walkthroughs, and feature highlights.</p>
-        <ul>
-          <li>Screenshot floats on Gallery White with soft shadow</li>
-          <li>Annotation in bold ink with loose coral wash</li>
-          <li>Center the UI at about half the canvas</li>
-        </ul>
-      </div>
-      <div class="image-style-card">
-        <div class="image-style-meta">Style 3</div>
-        <div class="image-style-title">Editorial Collage (Photos)</div>
-        <p>Use for personal stories, week-in-review, and real-life moments.</p>
-        <ul>
-          <li>Polaroid-style white border and soft shadow</li>
-          <li>Caption in Roboto Slab, charcoal ink</li>
-          <li>Coral brushstroke behind 1-2 key words in the caption</li>
-        </ul>
-      </div>
-      <div class="image-style-card">
-        <div class="image-style-meta">Style 4</div>
-        <div class="image-style-title">Vibrant Concept (Illustrations)</div>
-        <p>Use for metaphors, future-gazing, and abstract ideas.</p>
-        <ul>
-          <li>Simple metaphor in bold ink sketch</li>
-          <li>Watercolor explosion in Teal, Gold, Violet, Coral</li>
-          <li>Energy debris: sparks, squiggles, flow lines</li>
-        </ul>
-      </div>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-    <h3>AI Generation Prompt (Style 4)</h3>
-    <pre class="prompt-block"><code>A loose, expressive, and high-energy "ink and wash" illustration of [INSERT SUBJECT HERE].
-The artwork mimics a creative graphic recording or concept sketch, featuring bold, confident ink
-lines created with a brush pen. The linework must have variable thickness (tapering from thick to
-thin) and organic imperfections to look truly hand-drawn. Avoid text, letters, typography, and
-uniform vector lines.
+    <script>
+        const CANVAS_SIZE = 1080;
+        const FONT_SIZE = 45;
+        const LINE_HEIGHT = 74;
+        const QUOTE_MARK_SIZE = 162;
+        const MARGIN = 130;
+        const BRAND_FONT_SIZE = 22;
+        const MAX_TEXT_WIDTH = CANVAS_SIZE - MARGIN * 2;
 
-Surround the main subject with dynamic energy debris - floating sparks, squiggles, flow lines, and
-small abstract icons that give the piece movement. The color application is explosive and messy:
-use loose watercolor washes in Neon Coral (#FF5E7E), Deep Teal (#2A9D8F), Harvest Gold (#E9C46A),
-and Muted Violet (#9D85B1). The colors should not stay inside the lines; let them bleed, drip,
-splash, and blend together across the textured Gallery White (#FAF9F6) paper background. The vibe
-is creative, metaphorical, and joyful.</code></pre>
-  </section>
+        // Colors
+        const BG_COLOR = "#F5F0E8";
+        const FOREST_GREEN = "#2D5016";
+        const INK = "#2D2A28";
+        const FOOTER_COLOR = "#A09690";
 
-  <!-- ANNOTATION KIT -->
-  <section id="annotation">
-    <div class="section-label">09 — Annotation Kit</div>
-    <h2>Hand-Drawn Annotation Kit</h2>
-    <p>Reusable annotation elements in coral watercolor with ink outlines. Keep the mark-making loose and organic.</p>
-    <div class="annotation-grid">
-      <div class="annotation-card">
-        <div class="annotation-title">Arrows</div>
-        <p>Straight, curved, double-headed, and spiral arrows with bold ink lines and coral wash.</p>
-      </div>
-      <div class="annotation-card">
-        <div class="annotation-title">Shapes</div>
-        <p>Circle/ellipse, rounded rectangle, and diamond. Keep edges imperfect and hand-drawn.</p>
-      </div>
-      <div class="annotation-card">
-        <div class="annotation-title">Accents</div>
-        <p>Wavy underline, stars, and small burst marks for emphasis.</p>
-      </div>
-      <div class="annotation-card">
-        <div class="annotation-title">Speech Bubbles</div>
-        <p>Loose bubble shapes with coral fill, ink outline, and playful tails.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUOTE CARD -->
-  <section id="quotable">
-    <div class="section-label">10 — Quote Cards</div>
-    <h2>Quotable Format</h2>
-    <p>Generated programmatically with Python/PIL. No AI image gen, zero cost per image.</p>
-
-    <div class="quote-generator">
-      <div class="quote-canvas-panel">
-        <canvas class="quote-canvas" id="quote-canvas" width="1080" height="1080" aria-label="Quote card preview"></canvas>
-      </div>
-      <div class="quote-controls">
-        <textarea id="quote-input" placeholder="Enter your quote here..."></textarea>
-        <div class="quote-help">Wrap words in [brackets] for coral highlight</div>
-        <div class="quote-buttons">
-          <button class="quote-btn quote-btn-primary" id="quote-generate" type="button">Generate</button>
-          <button class="quote-btn quote-btn-secondary" id="quote-download" type="button">Download PNG</button>
-        </div>
-      </div>
-    </div>
-
-    <h3>Specs</h3>
-    <ul>
-      <li>1080×1080 square format</li>
-      <li>Procedural cardstock texture background</li>
-      <li>Special Elite typewriter font, Dark Charcoal ink</li>
-      <li>Large coral quotation mark as top accent</li>
-      <li>Coral highlighter on key phrases (via [brackets])</li>
-      <li>"Thursday Thoughts on AI" footer with coral divider</li>
-      <li>No author attribution on Jaclyn's own quotes</li>
-    </ul>
-  </section>
-
-  <!-- CAROUSEL GENERATOR -->
-  <section id="carousel">
-    <div class="section-label">11 — Carousel Generator</div>
-    <h2>Carousel Generator</h2>
-    <p>Paste your post text and we'll turn it into a branded carousel. Or use JSON for precise control.</p>
-
-    <div class="carousel-generator">
-      <div class="carousel-controls">
-        <div class="carousel-mode-toggle">
-          <button class="carousel-mode-btn active" id="mode-text" type="button">Text</button>
-          <button class="carousel-mode-btn" id="mode-url" type="button">URL</button>
-          <button class="carousel-mode-btn" id="mode-json" type="button">JSON</button>
-        </div>
-        <div id="url-input-row" style="display:none; margin-bottom: 0.75rem;">
-          <div style="display:flex; gap:0.5rem;">
-            <input type="url" id="carousel-url" placeholder="Paste a URL (Substack, LinkedIn, blog post...)" style="flex:1; padding:0.65rem 1rem; border-radius:12px; border:1px solid rgba(38,70,83,0.2); font-size:0.85rem; outline:none;" />
-            <button class="carousel-btn carousel-btn-primary" id="carousel-fetch" type="button" style="white-space:nowrap;">Fetch</button>
-          </div>
-        </div>
-        <textarea id="carousel-input" placeholder="Paste your post, tweet, or essay here. The tool will automatically break it into slides and pick the right templates.
-
-Example: Just paste the full text of a LinkedIn post or newsletter excerpt..."></textarea>
-        <div class="carousel-buttons">
-          <button class="carousel-btn carousel-btn-secondary" id="carousel-load" type="button">Load Sample</button>
-          <button class="carousel-btn carousel-btn-primary" id="carousel-generate" type="button">Generate Slides</button>
-        </div>
-        <div class="carousel-plan" id="carousel-plan" style="display:none;"></div>
-        <div class="carousel-status" id="carousel-status">Paste your content and click Generate.</div>
-      </div>
-      <div class="carousel-preview">
-        <canvas class="carousel-main-canvas" id="carousel-main" width="1080" height="1080" aria-label="Carousel slide preview"></canvas>
-        <div class="carousel-actions">
-          <button class="carousel-btn carousel-btn-primary" id="carousel-download-zip" type="button">Download All PNGs</button>
-          <button class="carousel-btn carousel-btn-secondary" id="carousel-download-pdf" type="button">Download PDF</button>
-        </div>
-        <div class="carousel-thumbs" id="carousel-thumbs" aria-label="Carousel slide thumbnails"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STRUCTURE -->
-  <section id="structure">
-    <div class="section-label">12 — Content Architecture</div>
-    <h2>Newsletter Post Structure</h2>
-    <div class="structure-flow">
-      <div class="structure-step">
-        <div>
-          <div class="structure-step-title">Hook</div>
-          <div class="structure-step-desc">A provocative observation, question, or personal anecdote. 1–2 paragraphs.</div>
-        </div>
-      </div>
-      <div class="structure-step">
-        <div>
-          <div class="structure-step-title">Setup</div>
-          <div class="structure-step-desc">Frame the tension or problem with concrete examples. 2–3 paragraphs.</div>
-        </div>
-      </div>
-      <div class="structure-step">
-        <div>
-          <div class="structure-step-title">Exploration</div>
-          <div class="structure-step-desc">Dig into implications. Personal story or case study anchors the abstract.</div>
-        </div>
-      </div>
-      <div class="structure-step">
-        <div>
-          <div class="structure-step-title">The Turn</div>
-          <div class="structure-step-desc">The insight or framework that reframes the problem.</div>
-        </div>
-      </div>
-      <div class="structure-step">
-        <div>
-          <div class="structure-step-title">Landing</div>
-          <div class="structure-step-desc">Practical takeaway or open question for the reader.</div>
-        </div>
-      </div>
-    </div>
-
-    <h3>Post Title Patterns</h3>
-    <ul>
-      <li><strong>The [Concept] [Paradox/Effect]</strong> — "The Disposable Software Paradox"</li>
-      <li><strong>[Imperative] + [Surprise]</strong> — "If You Want to Get Hired as an AI PM - Go Build Something"</li>
-      <li><strong>[Provocative Question]</strong> — "The Infinitely Customizable Basic App"</li>
-      <li><strong>[Personal + Reflective]</strong> — "Looking Ahead into 2026: My Guiding Principles"</li>
-    </ul>
-  </section>
-
-  <!-- PILLARS -->
-  <section id="pillars">
-    <div class="section-label">13 — Content Pillars</div>
-    <h2>What Thursday Thoughts Covers</h2>
-    <div class="beliefs-grid">
-      <div class="belief-card">
-        <div class="belief-num">Pillar 1</div>
-        <div class="belief-title">AI Product Strategy</div>
-        <div class="belief-desc">What's changing about how we build products in the age of AI.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">Pillar 2</div>
-        <div class="belief-title">The Future of Work</div>
-        <div class="belief-desc">How AI reshapes roles — especially product management.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">Pillar 3</div>
-        <div class="belief-title">Build to Learn</div>
-        <div class="belief-desc">Side projects, experiments, and shipping culture.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">Pillar 4</div>
-        <div class="belief-title">Emerging Patterns</div>
-        <div class="belief-desc">Disposable software, generative UX, the agent economy.</div>
-      </div>
-      <div class="belief-card">
-        <div class="belief-num">Pillar 5</div>
-        <div class="belief-title">Personal Reflection</div>
-        <div class="belief-desc">Honest takes on navigating uncertainty and compounding change.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TOOLKIT -->
-  <section id="toolkit">
-    <div class="section-label">14 — Toolkit</div>
-    <h2>Brand Tools</h2>
-    <div class="toolkit-grid">
-      <div class="tool-card live">
-        <div class="tool-status">✓ Live</div>
-        <div class="tool-name">Quotable Image Generator</div>
-        <div class="tool-desc">Python/PIL quote cards with cardstock texture + typewriter aesthetic. Zero cost per image.</div>
-      </div>
-      <div class="tool-card planned">
-        <div class="tool-status">Planned</div>
-        <div class="tool-name">Post-to-Social Splitter</div>
-        <div class="tool-desc">Feed a newsletter, extract 3–5 tweetable insights with platform variants.</div>
-      </div>
-      <div class="tool-card planned">
-        <div class="tool-status">Planned</div>
-        <div class="tool-name">Newsletter Promo Card</div>
-        <div class="tool-desc">Branded card for promoting each issue across social platforms.</div>
-      </div>
-      <div class="tool-card planned">
-        <div class="tool-status">Planned</div>
-        <div class="tool-name">Header / Hero Generator</div>
-        <div class="tool-desc">Branded banner images for newsletter headers and social covers.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LINKS -->
-  <section id="links">
-    <div class="section-label">15 — Key Links</div>
-    <h2>Find Thursday Thoughts</h2>
-    <div class="links-grid">
-      <a href="https://blog.jaclynkonzelmann.com" target="_blank" class="link-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Newsletter
-      </a>
-      <a href="https://jaclynkonzelmann.com" target="_blank" class="link-pill">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        Personal Site
-      </a>
-      <a href="https://x.com/jacalulu" target="_blank" class="link-pill">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        @jacalulu
-      </a>
-      <a href="https://linkedin.com/in/jaclynkonzelmann" target="_blank" class="link-pill">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-        LinkedIn
-      </a>
-      <a href="https://substack.com/@jacalulu" target="_blank" class="link-pill">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
-        Substack
-      </a>
-    </div>
-  </section>
-
-  <!-- VISUAL DO/DONTS -->
-  <section id="visual-rules">
-    <div class="section-label">16 — Visual Do's & Don'ts</div>
-    <h2>Visual Do's & Don'ts</h2>
-    <p>Quick reference for visual execution across typography, canvas, and imagery styles.</p>
-    <table class="do-dont-table">
-      <thead>
-        <tr>
-          <th>Component</th>
-          <th>Do This</th>
-          <th>Avoid This</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Typography</strong></td>
-          <td>Headers: Slab Serif (Charcoal). Body: Sans Serif (clean)</td>
-          <td>Generic sans headers, Times New Roman, goofy handwritten fonts</td>
-        </tr>
-        <tr>
-          <td><strong>The Canvas</strong></td>
-          <td>Gallery White (#FAF9F6) textured paper background for everything</td>
-          <td>Pure white digital backgrounds, dark mode, random colors</td>
-        </tr>
-        <tr>
-          <td><strong>Color Strategy</strong></td>
-          <td>Professional: Charcoal + Coral. Creative: full spectrum watercolor</td>
-          <td>Muddy colors, neon tech gradients, coral as bucket fill</td>
-        </tr>
-        <tr>
-          <td><strong>Illustration</strong></td>
-          <td>Marker & wash: bold ink outlines + loose watercolor splashes</td>
-          <td>Flat vectors, hyper-real 3D, pixel art</td>
-        </tr>
-        <tr>
-          <td><strong>Diagrams</strong></td>
-          <td>Ink & Accent: clean ink lines, coral highlight on main point only</td>
-          <td>Complex multicolored flowcharts, default PPT charts</td>
-        </tr>
-        <tr>
-          <td><strong>Screenshots</strong></td>
-          <td>Floating interface: screenshot on Gallery White + shadow + annotations</td>
-          <td>Raw screenshots pasted directly without context or shadows</td>
-        </tr>
-        <tr>
-          <td><strong>Photos</strong></td>
-          <td>Editorial collage: Polaroid frame, white border, coral stroke on caption</td>
-          <td>Photos filling full width, no borders or shadows</td>
-        </tr>
-        <tr>
-          <td><strong>Metaphors</strong></td>
-          <td>Vibrant concept: simple metaphor in ink + colorful watercolor explosion</td>
-          <td>Literal robot scenes, complex scenes, pencil sketches</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-</main>
-
-<div class="copied-toast" id="toast">Copied!</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-<script>
-  // Password gate — hash-based so password isn't in source
-  const HASH = '182072537ada59e4d6b18034a80302ebae935f66adbdf0f271d3d36309c2d481'; // sha256
-  async function sha256(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-  async function checkGate() {
-    const pw = document.getElementById('gate-pw').value;
-    const hash = await sha256(pw);
-    if (hash === HASH) {
-      document.getElementById('gate').classList.add('hidden');
-      document.body.classList.remove('locked');
-      sessionStorage.setItem('tt-auth', '1');
-    } else {
-      document.getElementById('gate-error').classList.add('show');
-      setTimeout(() => document.getElementById('gate-error').classList.remove('show'), 2000);
-    }
-  }
-  document.getElementById('gate-pw').addEventListener('keydown', e => { if (e.key === 'Enter') checkGate(); });
-  // Auto-unlock if already authenticated this session
-  if (sessionStorage.getItem('tt-auth') === '1') {
-    document.getElementById('gate').classList.add('hidden');
-    document.body.classList.remove('locked');
-  }
-
-  // Click-to-copy hex colors
-  function copyColor(hex, el) {
-    navigator.clipboard.writeText(hex).then(() => {
-      const toast = document.getElementById('toast');
-      toast.textContent = `Copied ${hex}`;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1500);
-    });
-  }
-
-  // Active nav tracking
-  const sections = document.querySelectorAll('section');
-  const navLinks = document.querySelectorAll('nav a');
-  const menuToggle = document.getElementById('mobile-menu-toggle');
-
-  if (menuToggle) {
-    menuToggle.addEventListener('click', () => {
-      const isOpen = document.body.classList.toggle('nav-open');
-      menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-  }
-
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      if (document.body.classList.contains('nav-open')) {
-        document.body.classList.remove('nav-open');
-        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-  });
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        const activeLink = document.querySelector(`nav a[href="#${entry.target.id}"]`);
-        if (activeLink) activeLink.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-20% 0px -60% 0px' });
-
-  sections.forEach(section => observer.observe(section));
-
-  // Shared texture preload
-  const textureImg = new Image();
-  textureImg.src = 'cardstock_texture.png';
-  let textureLoaded = false;
-  const textureReady = new Promise(resolve => {
-    if (textureImg.complete) {
-      textureLoaded = true;
-      resolve();
-      return;
-    }
-    textureImg.onload = () => {
-      textureLoaded = true;
-      resolve();
-    };
-  });
-
-  // Quote card generator
-  const quoteCanvas = document.getElementById('quote-canvas');
-  const quoteInput = document.getElementById('quote-input');
-  const quoteGenerate = document.getElementById('quote-generate');
-  const quoteDownload = document.getElementById('quote-download');
-
-  if (quoteCanvas && quoteInput && quoteGenerate && quoteDownload) {
-    const ctx = quoteCanvas.getContext('2d');
-    const canvasSize = 1080;
-    const defaultQuote = 'When AI agents handle all the boring digital stuff, which [products] will you still want to use?';
-    const colors = {
-      background: '#F5F0E8',
-      coral: '#FF5E7E',
-      ink: '#2D2A28',
-      footer: '#A0968C'
-    };
-
-    quoteInput.value = defaultQuote;
-
-    function parseHighlightedWords(text) {
-      const segments = [];
-      let buffer = '';
-      let isHighlighted = false;
-
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        if (char === '[') {
-          if (buffer) segments.push({ text: buffer, highlight: isHighlighted });
-          buffer = '';
-          isHighlighted = true;
-          continue;
-        }
-        if (char === ']') {
-          if (buffer) segments.push({ text: buffer, highlight: isHighlighted });
-          buffer = '';
-          isHighlighted = false;
-          continue;
-        }
-        buffer += char;
-      }
-      if (buffer) segments.push({ text: buffer, highlight: isHighlighted });
-
-      const words = [];
-      segments.forEach(segment => {
-        segment.text.split(/\s+/).forEach(word => {
-          if (word) words.push({ text: word, highlight: segment.highlight });
-        });
-      });
-      return words;
-    }
-
-    function wrapLines(paragraphs, maxWidth, ctx) {
-      const lines = [];
-      const spaceWidth = ctx.measureText(' ').width;
-      paragraphs.forEach(words => {
-        if (!words.length) {
-          lines.push({ words: [], width: 0 });
-          return;
+        function hexToRgb(hex) {
+            hex = hex.lstrip('#');
+            return [
+                parseInt(hex.substring(0, 2), 16),
+                parseInt(hex.substring(2, 4), 16),
+                parseInt(hex.substring(4, 6), 16)
+            ];
         }
 
-        let current = [];
-        let currentWidth = 0;
-        words.forEach(word => {
-          const wordWidth = ctx.measureText(word.text).width;
-          const nextWidth = currentWidth + (current.length ? spaceWidth : 0) + wordWidth;
-          if (nextWidth > maxWidth && current.length) {
-            lines.push({ words: current, width: currentWidth });
-            current = [];
-            currentWidth = 0;
-          }
-          current.push({ ...word, width: wordWidth });
-          currentWidth += (current.length > 1 ? spaceWidth : 0) + wordWidth;
-        });
+        const canvas = document.getElementById('quote-canvas');
+        const input = document.getElementById('quote-input');
+        const genBtn = document.getElementById('quote-generate');
+        const dlBtn = document.getElementById('quote-download');
 
-        if (current.length) lines.push({ words: current, width: currentWidth });
-      });
+        input.value = 'Take time to relax and [smell the pine needles]';
 
-      return { lines, spaceWidth };
-    }
+        function parseHighlighted(text) {
+            const parts = [];
+            let buffer = '';
+            let isHighlighted = false;
 
-    // ── Exact Python quotable.py values ──
-    const S = canvasSize; // 1080
-    const fontSize = Math.round(S * 0.042);   // 45
-    const lineHeight = Math.round(fontSize * 1.65);  // 74
-    const quoteMarkSize = Math.round(S * 0.15);  // 162
-    const margin = Math.round(S * 0.12);  // 130
-    const maxTextWidth = S - margin * 2;
-    const brandFontSize = Math.round(S * 0.02);  // 22
-    const fontFamily = '"Special Elite", serif';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === '[') {
+                    if (buffer) parts.push({ text: buffer, highlight: isHighlighted });
+                    buffer = '';
+                    isHighlighted = true;
+                } else if (char === ']') {
+                    if (buffer) parts.push({ text: buffer, highlight: isHighlighted });
+                    buffer = '';
+                    isHighlighted = false;
+                } else {
+                    buffer += char;
+                }
+            }
+            if (buffer) parts.push({ text: buffer, highlight: isHighlighted });
 
-    function renderQuoteCard(canvas, text) {
-      const ctx = canvas.getContext('2d');
-      // Background: texture or solid
-      if (textureLoaded) {
-        ctx.drawImage(textureImg, 0, 0, S, S);
-      } else {
-        ctx.fillStyle = colors.background;
-        ctx.fillRect(0, 0, S, S);
-      }
+            const words = [];
+            parts.forEach(part => {
+                part.text.split(/\s+/).forEach(word => {
+                    if (word) words.push({ text: word, highlight: part.highlight });
+                });
+            });
+            return words;
+        }
 
-      // Set font for measuring
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'top';  // PIL uses top baseline
+        function renderQuote(text) {
+            if (!canvas.getContext) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = BG_COLOR;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-      const paragraphs = text.split(/\n/).map(line => parseHighlightedWords(line));
-      const { lines } = wrapLines(paragraphs, maxTextWidth, ctx);
-      const textBlockHeight = lines.length * lineHeight;
+            // Fonts
+            ctx.font = `${FONT_SIZE}px Courier New, monospace`;
+            ctx.textBaseline = 'top';
 
-      // Vertical center (Python: start_y = (size - block) // 2 - size*0.03)
-      const startY = Math.round((S - textBlockHeight) / 2 - S * 0.03);
+            // Wrap lines
+            const words = text.split(/\s+/);
+            const lines = [];
+            let line = '';
 
-      // Quote mark (Python: positioned at start_y - size*0.1)
-      ctx.save();
-      ctx.fillStyle = colors.coral;
-      ctx.font = `${quoteMarkSize}px ${fontFamily}`;
-      ctx.textBaseline = 'top';
-      const qmW = ctx.measureText('\u201C').width;
-      ctx.fillText('\u201C', S / 2 - qmW / 2, startY - Math.round(S * 0.1));
-      ctx.restore();
+            words.forEach(word => {
+                const testLine = line ? line + ' ' + word : word;
+                const w = ctx.measureText(testLine).width;
+                if (w > MAX_TEXT_WIDTH && line) {
+                    lines.push(line);
+                    line = word;
+                } else {
+                    line = testLine;
+                }
+            });
+            if (line) lines.push(line);
 
-      // Body text
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      ctx.textBaseline = 'top';
+            // Calculate positioning
+            const blockHeight = lines.length * LINE_HEIGHT;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2 - CANVAS_SIZE * 0.03);
 
-      lines.forEach((line, i) => {
-        const ly = startY + i * lineHeight;
-        if (!line.words.length) return;
-        const lineText = line.words.map(w => w.text).join(' ');
-        const lineW = ctx.measureText(lineText).width;
-        const lineX = S / 2 - lineW / 2;
+            // Quotation mark
+            ctx.font = `${QUOTE_MARK_SIZE}px Courier New, monospace`;
+            ctx.fillStyle = FOREST_GREEN;
+            const qmY = startY - Math.round(CANVAS_SIZE * 0.1);
+            const qm = '\u201C';
+            const qmW = ctx.measureText(qm).width;
+            ctx.fillText(qm, CANVAS_SIZE / 2 - qmW / 2, qmY);
 
-        // Highlights (Python: rgba(255,94,126, 110/255) ≈ 0.43, rounded rect)
-        let cursor = 0;
-        line.words.forEach(word => {
-          const before = lineText.substring(0, cursor);
-          const beforeW = before ? ctx.measureText(before).width : 0;
+            // Body text
+            ctx.font = `${FONT_SIZE}px Courier New, monospace`;
+            ctx.fillStyle = INK;
+            
+            let currentY = startY;
+            lines.forEach(lineText => {
+                const parsedWords = parseHighlighted(lineText);
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
 
-          if (word.highlight) {
-            const wordW = ctx.measureText(word.text).width;
-            const padX = 6;
-            const hx = lineX + beforeW - padX;
-            const hHeight = Math.round(lineHeight * 0.75);
-            const hTop = ly - Math.round(lineHeight * 0.12);
+                parsedWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
 
-            ctx.fillStyle = 'rgba(255, 94, 126, 0.43)';
+                    if (word.highlight) {
+                        // Highlight background
+                        ctx.fillStyle = 'rgba(45, 80, 22, 0.2)';
+                        ctx.fillRect(x - 8, currentY - 8, wordW + 16, LINE_HEIGHT - 16);
+                    }
+
+                    // Text
+                    ctx.fillStyle = INK;
+                    ctx.font = `${FONT_SIZE}px Courier New, monospace`;
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + ctx.measureText(' ').width;
+                });
+
+                currentY += LINE_HEIGHT;
+            });
+
+            // Footer divider
+            const footerY = CANVAS_SIZE - Math.round(CANVAS_SIZE * 0.06);
+            const lineY = footerY - Math.round(CANVAS_SIZE * 0.02);
+            const lineHalf = Math.round(CANVAS_SIZE * 0.08);
+
+            ctx.strokeStyle = FOREST_GREEN;
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.roundRect(hx, hTop, wordW + padX * 2, hHeight, 3);
-            ctx.fill();
-          }
-          cursor += word.text.length + 1;
+            ctx.moveTo(CANVAS_SIZE / 2 - lineHalf, lineY);
+            ctx.lineTo(CANVAS_SIZE / 2 + lineHalf, lineY);
+            ctx.stroke();
+
+            // Footer text
+            ctx.font = `${BRAND_FONT_SIZE}px Helvetica, sans-serif`;
+            ctx.fillStyle = FOOTER_COLOR;
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        input.addEventListener('input', () => {
+            renderQuote(input.value);
         });
 
-        // Ink: rgb(45,42,40) — exact Python INK_BLACK
-        ctx.fillStyle = 'rgb(45, 42, 40)';
-        ctx.font = `${fontSize}px ${fontFamily}`;
-        ctx.fillText(lineText, lineX, ly);
-      });
-
-      // Bottom branding (Python: brand_y = size - size*0.06)
-      const brandY = S - Math.round(S * 0.06);
-      ctx.font = `${brandFontSize}px "Roboto Slab", serif`;
-      ctx.fillStyle = 'rgb(160, 150, 140)';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillText('Thursday Thoughts on AI', S / 2, brandY);
-
-      // Coral line above branding (Python: line_y = brand_y - size*0.02)
-      const lineY = brandY - Math.round(S * 0.02);
-      const lineHalf = Math.round(S * 0.08);
-      ctx.strokeStyle = colors.coral;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(S / 2 - lineHalf, lineY);
-      ctx.lineTo(S / 2 + lineHalf, lineY);
-      ctx.stroke();
-    }
-
-    window.renderQuoteCard = renderQuoteCard;
-
-    function renderQuote(text) {
-      const safeText = text && text.trim() ? text : defaultQuote;
-      renderQuoteCard(quoteCanvas, safeText);
-    }
-
-    let debounceId;
-    quoteInput.addEventListener('input', () => {
-      window.clearTimeout(debounceId);
-      debounceId = window.setTimeout(() => renderQuote(quoteInput.value), 300);
-    });
-
-    quoteGenerate.addEventListener('click', () => renderQuote(quoteInput.value));
-
-    quoteDownload.addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.download = 'thursday-thoughts-quote.png';
-      link.href = quoteCanvas.toDataURL('image/png');
-      link.click();
-    });
-
-    // Wait for both fonts and texture before first render
-    const fontReady = document.fonts
-      ? Promise.all([
-        document.fonts.load(`${fontSize}px "Special Elite"`),
-        document.fonts.load(`${quoteMarkSize}px "Special Elite"`),
-        document.fonts.load(`${brandFontSize}px "Roboto Slab"`),
-      ])
-      : Promise.resolve();
-
-    Promise.all([fontReady, textureReady]).then(() => renderQuote(defaultQuote));
-  }
-
-  // ═══════════════════════════════════════
-  // CAROUSEL GENERATOR
-  // ═══════════════════════════════════════
-  {
-    const CS = 1080;
-    const M = 80;
-    const FOOTER_H = 86;
-    const CW = CS - M * 2;
-    const CH = CS - M - FOOTER_H;
-
-    const CHARCOAL = '#264653';
-    const CORAL = '#FF5E7E';
-    const INK = 'rgb(45,42,40)';
-    const INK_SEC = 'rgb(80,75,70)';
-    const DARK_TXT = 'rgb(250,249,246)';
-    const DARK_SEC = 'rgb(200,198,195)';
-    const FOOTER_LT = 'rgb(160,150,140)';
-    const FOOTER_DK = 'rgb(180,175,170)';
-
-    const sampleJSON = `{
-  "slides": [
-    {"style":"hook","intro":"3-day weekend. One AI agent.","headline":["Here's what"],"headline_accent":["happened."],"show_arrow":true},
-    {"style":"statement_stats","label":"COLORING BOOK","headline":["From illustrations to","cover design to KDP","formatting — all built","over the weekend."],"accent":"That's wild to me.","stats":[{"value":"50","label":"Coloring Pages"},{"value":"1","label":"KDP Submission"},{"value":"1","label":"iPad Flipbook"}]},
-    {"style":"body","label":"CANADA TRIP PLANNER","headline":["Interactive map with","watercolor portraits","of everyone."],"body":["Leaflet.js, custom tiles,","family avatar pins that","link to each stop."]},
-    {"style":"body","label":"WEEKNIGHT DINNERS","headline":["Smart grocery list —","pick meals, it parses","ingredients, scales","for your family."],"body":["One tap to copy and go."]},
-    {"style":"body","label":"BRAND IDENTITY","headline":["Colors, typography,","voice, image styles —","all in one place."],"body":["So I can automate the","monotonous stuff: asset","generation, cropping, drop","shadows — all the repetitive","visual work."]},
-    {"style":"bullet_list","intro":["Oh — and the kids and I also","had a great weekend."],"items":["Grandparents visited","Multiple playgrounds","Organized the bedroom","Cooked new recipes"],"closing":["It's amazing what you","can get done when an"],"closing_accent":["AI is working behind","the scenes."]},
-    {"style":"pull_quote","quote":"The cost of building is\\ntrending to [zero].\\nThis weekend I felt it."}
-  ]
-}`;
-
-    const sampleText = `3-day weekend. One AI agent. Here's what happened.
-
-I built a Yosemite coloring book — from illustrations to cover design to KDP formatting. 50 coloring pages, submitted to Amazon, and built a standalone iPad flipbook viewer for my daughter. That's wild to me.
-
-I also shipped an interactive Canada trip planner with a Leaflet map and watercolor avatar pins for every family member. And my weeknight dinner app got a smart grocery list — pick your meals, it parses every ingredient, scales for your family size, and dedupes. One tap to copy and go.
-
-Then I formalized a complete brand identity for Thursday Thoughts on AI. Colors, typography, voice, image styles — all codified in one place so I can automate the monotonous visual work.
-
-Oh — and the kids and I also had a great weekend. Grandparents visited. Multiple playgrounds. Organized the bedroom. Cooked new recipes.
-
-It's amazing what you can get done when an AI is working behind the scenes.
-
-The cost of building is trending to zero. This weekend I felt it.`;
-
-    const carouselInput = document.getElementById('carousel-input');
-    const carouselMain = document.getElementById('carousel-main');
-    const carouselThumbs = document.getElementById('carousel-thumbs');
-    const carouselStatus = document.getElementById('carousel-status');
-    const carouselPlan = document.getElementById('carousel-plan');
-    let slideCanvases = [];
-    let inputMode = 'text'; // 'text' or 'json'
-
-    // Mode toggle
-    const modeBtns = ['mode-text', 'mode-url', 'mode-json'];
-    const urlRow = document.getElementById('url-input-row');
-
-    function setMode(mode) {
-      inputMode = mode === 'url' ? 'text' : mode; // URL mode feeds into text mode after fetch
-      modeBtns.forEach(id => document.getElementById(id).classList.toggle('active', id === 'mode-' + mode));
-      urlRow.style.display = mode === 'url' ? 'block' : 'none';
-      if (mode === 'text') carouselInput.placeholder = 'Paste your post, tweet, or essay here...';
-      else if (mode === 'json') carouselInput.placeholder = 'Paste carousel JSON here...';
-      else if (mode === 'url') carouselInput.placeholder = 'Content will appear here after fetching...';
-    }
-
-    document.getElementById('mode-text').addEventListener('click', () => setMode('text'));
-    document.getElementById('mode-url').addEventListener('click', () => setMode('url'));
-    document.getElementById('mode-json').addEventListener('click', () => { inputMode = 'json'; setMode('json'); });
-
-    document.getElementById('carousel-fetch').addEventListener('click', async () => {
-      const url = document.getElementById('carousel-url').value.trim();
-      if (!url) { carouselStatus.textContent = '❌ Paste a URL first.'; return; }
-      carouselStatus.textContent = 'Fetching content from URL...';
-      try {
-        const resp = await fetch('/api/fetch-url?url=' + encodeURIComponent(url));
-        const data = await resp.json();
-        if (data.error) { carouselStatus.textContent = '❌ ' + data.error; return; }
-        carouselInput.value = data.text;
-        inputMode = 'text';
-        carouselStatus.textContent = '✅ Fetched ' + data.length + ' chars. Click Generate Slides.';
-      } catch (e) {
-        carouselStatus.textContent = '❌ Fetch failed: ' + e.message;
-      }
-    });
-
-    document.getElementById('carousel-load').addEventListener('click', () => {
-      carouselInput.value = inputMode === 'json' ? sampleJSON : sampleText;
-      carouselStatus.textContent = 'Sample loaded. Click Generate Slides.';
-    });
-
-    // ── Auto-splitter (ported from Python) ──
-    function splitSentences(text) {
-      return text.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/).filter(s => s.trim());
-    }
-
-    function wordCount(text) {
-      return (text.match(/\b\w+\b/g) || []).length;
-    }
-
-    function pickSlideCount(words) {
-      if (words < 100) return 5;
-      if (words < 180) return 6;
-      if (words < 250) return 7;
-      return 8;
-    }
-
-    function hasNumbers(text) {
-      return /\b\d+(?:[\d,.]*)?(?:%|x)?\b/.test(text);
-    }
-
-    function extractNumbers(text) {
-      return (text.match(/\b\d+(?:[\d,.]*)?(?:%|x)?\b/g) || []);
-    }
-
-    function splitLines(text, maxWords) {
-      maxWords = maxWords || 8;
-      const words = text.split(/\s+/);
-      const lines = [];
-      for (let i = 0; i < words.length; i += maxWords) {
-        lines.push(words.slice(i, i + maxWords).join(' '));
-      }
-      return lines.slice(0, 5);
-    }
-
-    function ensureBracket(text) {
-      if (/\[.*\]/.test(text)) return text;
-      const words = text.match(/\b\w+\b/g) || [];
-      for (let i = words.length - 1; i >= 0; i--) {
-        if (words[i].length > 4) return text.replace(new RegExp('\\b' + words[i] + '\\b'), '[' + words[i] + ']');
-      }
-      if (words.length) return text.replace(new RegExp('\\b' + words[words.length-1] + '\\b'), '[' + words[words.length-1] + ']');
-      return text;
-    }
-
-    function pickBestQuote(sentences) {
-      if (!sentences.length) return '';
-      if (sentences.length === 1) return sentences[0];
-
-      // Skip the first sentence (that's the hook, not the quote)
-      const candidates = sentences.slice(1);
-
-      const scored = candidates.map((s, i) => {
-        let score = 0;
-        const lower = s.toLowerCase();
-        const len = s.length;
-        const position = i / candidates.length; // 0 = early, 1 = late
-
-        // === LENGTH: sweet spot is 30-90 chars ===
-        if (len >= 30 && len <= 90) score += 80;
-        else if (len >= 20 && len <= 120) score += 40;
-        else if (len > 150) score -= 40;
-        else if (len < 15) score -= 20;
-
-        // === POSITION: later sentences carry more weight (conclusions) ===
-        score += Math.round(position * 60);
-
-        // === STANDALONE WISDOM: reads like a truth, not a fact ===
-        // Declarative statements that work without context
-        if (/^(the |it'?s |this |that'?s |what |there'?s |everything )/i.test(s)) score += 40;
-        if (/^(i think|i believe|i'?ve (learned|realized|found)|the (real|truth|thing|point|cost|power))/i.test(s)) score += 50;
-
-        // === EMOTIONAL / INSIGHT WORDS ===
-        const insightWords = ['amazing', 'wild', 'powerful', 'beautiful', 'incredible', 'surprising',
-          'actually', 'really', 'finally', 'zero', 'everything', 'nothing', 'never', 'always',
-          'felt', 'changed', 'shifted', 'realized', 'discovered', 'learned', 'matters',
-          'trending', 'future', 'possible', 'impossible', 'different'];
-        insightWords.forEach(w => { if (lower.includes(w)) score += 15; });
-
-        // === CONTRAST / TENSION ===
-        if (/\b(but|yet|however|not .* but|instead|despite|without)\b/i.test(s)) score += 25;
-        if (/\b(isn't|aren't|doesn't|won't|can't|shouldn't)\b/i.test(s)) score += 10;
-
-        // === PENALTY: transitional / listy / too specific ===
-        if (/^(i also|and |oh |also |plus |then )/i.test(s)) score -= 60;
-        if (/^(here'?s|check out|you can|click|visit|read more)/i.test(s)) score -= 80;
-        // Lists of specific items aren't quotable
-        if ((s.match(/,/g) || []).length >= 3) score -= 30;
-        // Too many proper nouns = too specific
-        if ((s.match(/[A-Z][a-z]{2,}/g) || []).length >= 3) score -= 20;
-        // URLs aren't quotes
-        if (/https?:\/\//.test(s)) score -= 100;
-
-        // === RHYTHM: short punchy sentences with periods hit harder ===
-        const wordCount = s.split(/\s+/).length;
-        if (wordCount >= 5 && wordCount <= 15) score += 30;
-        if (wordCount >= 8 && wordCount <= 12) score += 20; // ideal tweet-length
-
-        return { text: s, score };
-      });
-
-      scored.sort((a, b) => b.score - a.score);
-      return scored[0].text;
-    }
-
-    function autoSplit(rawText) {
-      const sentences = splitSentences(rawText);
-      const words = wordCount(rawText);
-      const slideCount = pickSlideCount(words);
-
-      const hookSentence = sentences[0] || rawText;
-
-      // Smart quote picker: scan ALL sentences, score on "quotability"
-      const closeSentence = pickBestQuote(sentences);
-      const middle = sentences.length > 2 ? sentences.slice(1, -1) : [];
-
-      const middleSlots = Math.max(0, slideCount - 2);
-      const chunks = [];
-      if (middleSlots && middle.length) {
-        const perChunk = Math.max(1, Math.floor(middle.length / middleSlots));
-        for (let i = 0; i < middleSlots; i++) {
-          const start = i * perChunk;
-          const end = i < middleSlots - 1 ? (i + 1) * perChunk : middle.length;
-          const chunk = middle.slice(start, end).join(' ').trim();
-          if (chunk) chunks.push(chunk);
-        }
-      }
-
-      const slides = [];
-
-      // Hook
-      const hookWords = hookSentence.split(/\s+/);
-      slides.push({
-        style: 'hook',
-        intro: hookWords.slice(0, 6).join(' '),
-        headline: hookWords.length > 6 ? [hookWords.slice(6).join(' ')] : [hookSentence],
-        headline_accent: [],
-        show_arrow: true
-      });
-
-      // Middle slides
-      chunks.forEach(chunk => {
-        if (hasNumbers(chunk)) {
-          const nums = extractNumbers(chunk);
-          const value = nums[0];
-          const rest = chunk.replace(value, '').trim();
-          slides.push({
-            style: 'big_number',
-            label: 'KEY STAT',
-            number: value,
-            description: rest || 'A number worth noticing.',
-            punchline: '',
-            punchline_accent: ''
-          });
-        } else if (chunk.split(/[.;]\s+/).length >= 4) {
-          const items = chunk.split(/[.;]\s+/).filter(s => s.trim());
-          slides.push({
-            style: 'bullet_list',
-            intro: items.slice(0, 1),
-            items: items.slice(1, 5),
-            closing: ['And that\'s just'],
-            closing_accent: ['the beginning.']
-          });
-        } else {
-          slides.push({
-            style: 'body',
-            label: 'INSIGHT',
-            headline: splitLines(chunk, 8),
-            body: splitLines(chunk, 14)
-          });
-        }
-      });
-
-      // Quote closer
-      slides.push({
-        style: 'pull_quote',
-        quote: ensureBracket(closeSentence)
-      });
-
-      return slides;
-    }
-
-    function formatPlan(slides) {
-      return 'Slide plan (' + slides.length + ' slides):\n' + slides.map((s, i) =>
-        '  ' + (i+1) + '. [' + s.style.toUpperCase() + '] ' +
-        (s.style === 'hook' ? (s.headline||[])[0]||'' :
-         s.style === 'pull_quote' ? (s.quote||'').slice(0,40)+'...' :
-         s.style === 'big_number' ? s.number :
-         (s.headline||[])[0]||'')
-      ).join('\n');
-    }
-
-    function drawLightBg(ctx) {
-      if (textureLoaded) { ctx.drawImage(textureImg, 0, 0, CS, CS); }
-      else { ctx.fillStyle = '#FAF9F6'; ctx.fillRect(0, 0, CS, CS); }
-    }
-
-    function drawDarkBg(ctx) {
-      ctx.fillStyle = CHARCOAL;
-      ctx.fillRect(0, 0, CS, CS);
-      if (textureLoaded) { ctx.globalAlpha = 0.08; ctx.drawImage(textureImg, 0, 0, CS, CS); ctx.globalAlpha = 1.0; }
-    }
-
-    function drawFooter(ctx, dark) {
-      const yLine = CS - 86;
-      ctx.strokeStyle = CORAL; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(CS/2 - 60, yLine); ctx.lineTo(CS/2 + 60, yLine); ctx.stroke();
-      ctx.font = '22px "Roboto Slab", serif';
-      ctx.fillStyle = dark ? FOOTER_DK : FOOTER_LT;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText('Thursday Thoughts on AI', CS/2, yLine + 16);
-      ctx.textAlign = 'left';
-    }
-
-    function canvasWrap(ctx, text, font, maxWidth) {
-      ctx.font = font;
-      const words = text.split(/\s+/);
-      const lines = [];
-      let current = '';
-      words.forEach(word => {
-        const test = current ? current + ' ' + word : word;
-        if (ctx.measureText(test).width > maxWidth && current) {
-          lines.push(current);
-          current = word;
-        } else {
-          current = test;
-        }
-      });
-      if (current) lines.push(current);
-      return lines;
-    }
-
-    function wrapAndDraw(ctx, textLines, x, y, gap, font, fill, maxWidth) {
-      ctx.font = font; ctx.fillStyle = fill; ctx.textBaseline = 'top';
-      const wrapped = [];
-      textLines.forEach(line => {
-        canvasWrap(ctx, line, font, maxWidth).forEach(wl => wrapped.push(wl));
-      });
-      wrapped.forEach(line => { ctx.fillText(line, x, y); y += gap; });
-      return { y, lineCount: wrapped.length };
-    }
-
-    function countWrapped(ctx, textLines, font, maxWidth) {
-      ctx.font = font;
-      let count = 0;
-      textLines.forEach(line => { count += canvasWrap(ctx, line, font, maxWidth).length; });
-      return count;
-    }
-
-    function drawLeftLines(ctx, lines, x, y, gap, font, fill) {
-      ctx.font = font; ctx.fillStyle = fill; ctx.textBaseline = 'top';
-      lines.forEach(line => { ctx.fillText(line, x, y); y += gap; });
-      return y;
-    }
-
-    function tw(ctx, text) { return ctx.measureText(text).width; }
-
-    function renderHook(ctx, s) {
-      drawDarkBg(ctx);
-      const intro = s.intro || '';
-      const hl = s.headline || [];
-      const ha = s.headline_accent || [];
-      const maxW = CW;
-      const hlFont = '72px "Roboto Slab", serif';
-
-      const introH = intro ? 40 : 0;
-      const hlCount = countWrapped(ctx, hl, hlFont, maxW);
-      const haCount = countWrapped(ctx, ha, hlFont, maxW);
-      const blockH = introH + (introH ? 30 : 0) + (hlCount + haCount) * 88;
-      let y = M + (CH - blockH) / 2;
-      if (intro) {
-        ctx.font = '30px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.textBaseline = 'top';
-        ctx.fillText(intro, M, y); y += 40 + 30;
-      }
-      const hlR = wrapAndDraw(ctx, hl, M, y, 88, hlFont, DARK_TXT, maxW);
-      y = hlR.y;
-      wrapAndDraw(ctx, ha, M, y, 88, hlFont, CORAL, maxW);
-      if (s.show_arrow) {
-        ctx.font = '44px "Inter", sans-serif'; ctx.fillStyle = CORAL;
-        ctx.fillText('→', CS - 120, CS - 140);
-      }
-      drawFooter(ctx, true);
-    }
-
-    function renderStatementStats(ctx, s) {
-      drawLightBg(ctx);
-      const label = (s.label || '').toUpperCase();
-      const hl = s.headline || [];
-      const accent = s.accent || '';
-      const stats = s.stats || [];
-
-      ctx.font = '22px "Inter", sans-serif'; ctx.textBaseline = 'top';
-      const labelH = label ? 30 : 0;
-      if (label) { ctx.fillStyle = CORAL; ctx.fillText(label, M, M); }
-
-      const topAfterLabel = M + labelH + 20;
-      const statsZoneH = stats.length ? 110 : 0;
-      const bottomBeforeStats = CS - FOOTER_H - statsZoneH - 30 - 20;
-      const hlH = hl.length * 64;
-      const accentH = accent ? 56 : 0;
-      const contentH = hlH + accentH;
-      let y = topAfterLabel + (bottomBeforeStats - topAfterLabel - contentH) / 2;
-
-      y = drawLeftLines(ctx, hl, M, y, 64, '52px "Roboto Slab", serif', INK);
-      if (accent) { y += 16; ctx.font = '40px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.fillText(accent, M, y); }
-
-      if (stats.length) {
-        const statsTop = CS - FOOTER_H - statsZoneH - 30;
-        ctx.strokeStyle = 'rgba(45,42,40,0.15)'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(M, statsTop - 8); ctx.lineTo(CS - M, statsTop - 8); ctx.stroke();
-
-        const colW = 220;
-        const clusterW = colW * stats.length;
-        const clusterX = (CS - clusterW) / 2;
-        ctx.font = '46px "Roboto Slab", serif';
-        const sampleH = 46;
-        const numY = statsTop + 8;
-        const labelY = numY + sampleH + 24;
-
-        stats.forEach((stat, i) => {
-          const colCenter = clusterX + colW * (i + 0.5);
-          ctx.font = '46px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.textAlign = 'center';
-          ctx.fillText(stat.value, colCenter, numY);
-          ctx.font = '17px "Inter", sans-serif'; ctx.fillStyle = INK_SEC;
-          ctx.fillText(stat.label, colCenter, labelY);
-          ctx.textAlign = 'left';
-          if (i < stats.length - 1) {
-            const xDiv = clusterX + colW * (i + 1);
-            ctx.strokeStyle = 'rgba(45,42,40,0.2)'; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(xDiv, numY); ctx.lineTo(xDiv, labelY + 20); ctx.stroke();
-          }
+        genBtn.addEventListener('click', () => {
+            renderQuote(input.value);
         });
-      }
-      drawFooter(ctx, false);
-    }
 
-    function renderBody(ctx, s) {
-      drawLightBg(ctx);
-      const label = (s.label || '').toUpperCase();
-      const hl = s.headline || [];
-      const body = s.body || [];
-      const maxW = CW; // 920px usable width
+        dlBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'lulus-quote.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
 
-      ctx.textBaseline = 'top';
-      const labelH = label ? 30 : 0;
-      if (label) { ctx.font = '22px "Inter", sans-serif'; ctx.fillStyle = CORAL; ctx.fillText(label, M, M); }
-
-      // Word-wrap headline and body to fit canvas
-      const hlWrapped = countWrapped(ctx, hl, '52px "Roboto Slab", serif', maxW);
-      const bodyWrapped = countWrapped(ctx, body, '32px "Inter", sans-serif', maxW);
-      const hlH = hlWrapped * 64;
-      const bodyH = bodyWrapped * 44;
-      const blockH = hlH + 30 + bodyH;
-      const topAfterLabel = M + labelH + 20;
-      const availH = CS - FOOTER_H - topAfterLabel;
-      let y = topAfterLabel + (availH - blockH) / 2;
-
-      const hlResult = wrapAndDraw(ctx, hl, M, y, 64, '52px "Roboto Slab", serif', INK, maxW);
-      y = hlResult.y + 30;
-      wrapAndDraw(ctx, body, M, y, 44, '32px "Inter", sans-serif', INK_SEC, maxW);
-      drawFooter(ctx, false);
-    }
-
-    function renderBulletList(ctx, s) {
-      drawDarkBg(ctx);
-      const intro = s.intro || [];
-      const items = s.items || [];
-      const closing = s.closing || [];
-      const closingAccent = s.closing_accent || [];
-
-      const introH = intro.length * 44;
-      const itemsH = items.length * 48;
-      const closingH = (closing.length + closingAccent.length) * 62;
-      const blockH = introH + 30 + itemsH + 40 + closingH;
-      let y = M + (CH - blockH) / 2;
-
-      y = drawLeftLines(ctx, intro, M, y, 44, '32px "Inter", sans-serif', DARK_TXT);
-      y += 30;
-      ctx.font = '30px "Inter", sans-serif'; ctx.textBaseline = 'top';
-      items.forEach(item => {
-        ctx.fillStyle = CORAL;
-        ctx.beginPath(); ctx.arc(M + 6, y + 18, 6, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = DARK_SEC; ctx.fillText(item, M + 28, y);
-        y += 48;
-      });
-      y += 40;
-      y = drawLeftLines(ctx, closing, M, y, 62, '50px "Roboto Slab", serif', DARK_TXT);
-      drawLeftLines(ctx, closingAccent, M, y, 62, '50px "Roboto Slab", serif', CORAL);
-      drawFooter(ctx, true);
-    }
-
-    function renderBigNumber(ctx, s) {
-      drawDarkBg(ctx);
-      const label = (s.label || '').toUpperCase();
-      const num = s.number || '';
-      const desc = s.description || '';
-      const punch = s.punchline || '';
-      const punchAccent = s.punchline_accent || '';
-
-      ctx.textBaseline = 'top';
-      const labelH = label ? 30 : 0;
-      const numH = 140;
-      const descH = 42;
-      const punchH = punch ? 40 : 0;
-      const blockH = labelH + 10 + numH + 16 + descH + 40 + punchH + (punchAccent ? 40 : 0);
-      let y = M + (CH - blockH) / 2;
-
-      if (label) { ctx.font = '22px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.fillText(label, M, y); y += labelH + 10; }
-      ctx.font = '140px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.fillText(num, M, y); y += numH + 16;
-      ctx.font = '30px "Inter", sans-serif'; ctx.fillStyle = DARK_SEC; ctx.fillText(desc, M, y); y += descH + 40;
-      if (punch) { ctx.font = '36px "Roboto Slab", serif'; ctx.fillStyle = DARK_TXT; ctx.fillText(punch, M, y); y += punchH; }
-      if (punchAccent) { ctx.font = '36px "Roboto Slab", serif'; ctx.fillStyle = CORAL; ctx.fillText(punchAccent, M, y); }
-      drawFooter(ctx, true);
-    }
-
-    function renderPullQuote(ctx, s) {
-      const canvas = ctx.canvas;
-      const quote = (s.quote || '').replace(/\\n/g, '\n');
-      if (typeof window.renderQuoteCard === 'function') {
-        window.renderQuoteCard(canvas, quote);
-      }
-    }
-
-    function renderCta(ctx, s) {
-      drawLightBg(ctx);
-      const mainLines = s.main || [];
-      const cta = s.cta || '';
-      const secondary = s.secondary || '';
-      const mainH = mainLines.length * 56;
-      const blockH = mainH + 24 + (cta ? 40 : 0) + (secondary ? 36 : 0);
-      let y = M + (CH - blockH) / 2;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      mainLines.forEach(line => { ctx.font = '44px "Roboto Slab", serif'; ctx.fillStyle = INK; ctx.fillText(line, CS/2, y); y += 56; });
-      y += 24;
-      if (cta) { ctx.font = '28px "Inter", sans-serif'; ctx.fillStyle = CORAL; ctx.fillText(cta, CS/2, y); y += 40; }
-      if (secondary) { ctx.font = '24px "Inter", sans-serif'; ctx.fillStyle = INK_SEC; ctx.fillText(secondary, CS/2, y); }
-      ctx.textAlign = 'left';
-      drawFooter(ctx, false);
-    }
-
-    function renderSlide(canvas, slide) {
-      canvas.width = CS; canvas.height = CS;
-      const ctx = canvas.getContext('2d');
-      const style = slide.style;
-      if (style === 'hook') renderHook(ctx, slide);
-      else if (style === 'statement_stats') renderStatementStats(ctx, slide);
-      else if (style === 'body') renderBody(ctx, slide);
-      else if (style === 'bullet_list') renderBulletList(ctx, slide);
-      else if (style === 'big_number') renderBigNumber(ctx, slide);
-      else if (style === 'pull_quote') renderPullQuote(ctx, slide);
-      else if (style === 'cta') renderCta(ctx, slide);
-      else { ctx.fillStyle = '#FAF9F6'; ctx.fillRect(0, 0, CS, CS); ctx.fillStyle = INK; ctx.font = '32px Inter'; ctx.fillText('Unknown style: ' + style, 40, 100); }
-    }
-
-    function showSlide(idx) {
-      if (!slideCanvases[idx]) return;
-      const mainCtx = carouselMain.getContext('2d');
-      carouselMain.width = CS; carouselMain.height = CS;
-      mainCtx.drawImage(slideCanvases[idx], 0, 0);
-      document.querySelectorAll('.carousel-thumb').forEach((t, i) => {
-        t.classList.toggle('active', i === idx);
-      });
-    }
-
-    document.getElementById('carousel-generate').addEventListener('click', async () => {
-      const raw = carouselInput.value.trim();
-      if (!raw) { carouselStatus.textContent = '❌ Paste some content first.'; return; }
-
-      let slides;
-      if (inputMode === 'json') {
-        let data;
-        try { data = JSON.parse(raw); }
-        catch (e) { carouselStatus.textContent = '❌ Invalid JSON: ' + e.message; return; }
-        slides = data.slides || [];
-        carouselPlan.style.display = 'none';
-      } else {
-        slides = autoSplit(raw);
-        carouselPlan.textContent = formatPlan(slides);
-        carouselPlan.style.display = 'block';
-      }
-
-      if (!slides.length) { carouselStatus.textContent = '❌ No slides generated.'; return; }
-
-      carouselStatus.textContent = 'Generating ' + slides.length + ' slides...';
-      await textureReady;
-      await document.fonts.ready;
-
-      slideCanvases = [];
-      carouselThumbs.innerHTML = '';
-
-      slides.forEach((slide, i) => {
-        const c = document.createElement('canvas');
-        renderSlide(c, slide);
-        slideCanvases.push(c);
-
-        const thumb = document.createElement('div');
-        thumb.className = 'carousel-thumb' + (i === 0 ? ' active' : '');
-        const tc = document.createElement('canvas');
-        tc.width = CS; tc.height = CS;
-        tc.getContext('2d').drawImage(c, 0, 0);
-        thumb.appendChild(tc);
-        thumb.addEventListener('click', () => showSlide(i));
-        carouselThumbs.appendChild(thumb);
-      });
-
-      showSlide(0);
-      carouselStatus.textContent = '✅ Generated ' + slides.length + ' slides.';
-    });
-
-    document.getElementById('carousel-download-zip').addEventListener('click', async () => {
-      if (!slideCanvases.length) { carouselStatus.textContent = 'Generate slides first.'; return; }
-      carouselStatus.textContent = 'Creating ZIP...';
-      const zip = new JSZip();
-      for (let i = 0; i < slideCanvases.length; i++) {
-        const blob = await new Promise(r => slideCanvases[i].toBlob(r, 'image/png'));
-        zip.file(`slide-${i + 1}.png`, blob);
-      }
-      const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, 'carousel-slides.zip');
-      carouselStatus.textContent = '✅ ZIP downloaded.';
-    });
-
-    document.getElementById('carousel-download-pdf').addEventListener('click', async () => {
-      if (!slideCanvases.length) { carouselStatus.textContent = 'Generate slides first.'; return; }
-      carouselStatus.textContent = 'Creating PDF...';
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [CS, CS] });
-      for (let i = 0; i < slideCanvases.length; i++) {
-        if (i > 0) pdf.addPage([CS, CS]);
-        const imgData = slideCanvases[i].toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', 0, 0, CS, CS);
-      }
-      pdf.save('carousel.pdf');
-      carouselStatus.textContent = '✅ PDF downloaded.';
-    });
-  }
-</script>
-
+        // Initial render
+        renderQuote(input.value);
+    </script>
 </body>
 </html>
