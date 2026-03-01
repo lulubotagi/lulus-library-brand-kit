@@ -290,22 +290,29 @@
             ctx.font = `${FONT_SIZE}px Courier New, monospace`;
             ctx.textBaseline = 'top';
 
-            // Wrap lines
-            const words = text.split(/\s+/);
+            // Parse highlights FIRST, then wrap lines
+            const allWords = parseHighlighted(text);
+            
+            // Wrap lines while preserving highlight info
             const lines = [];
-            let line = '';
+            let line = [];
+            let lineWidth = 0;
 
-            words.forEach(word => {
-                const testLine = line ? line + ' ' + word : word;
-                const w = ctx.measureText(testLine).width;
-                if (w > MAX_TEXT_WIDTH && line) {
+            allWords.forEach(word => {
+                const wordWidth = ctx.measureText(word.text).width;
+                const spaceWidth = ctx.measureText(' ').width;
+                const testWidth = lineWidth + (line.length ? spaceWidth : 0) + wordWidth;
+
+                if (testWidth > MAX_TEXT_WIDTH && line.length > 0) {
                     lines.push(line);
-                    line = word;
+                    line = [word];
+                    lineWidth = wordWidth;
                 } else {
-                    line = testLine;
+                    line.push(word);
+                    lineWidth += (line.length > 1 ? spaceWidth : 0) + wordWidth;
                 }
             });
-            if (line) lines.push(line);
+            if (line.length > 0) lines.push(line);
 
             // Calculate positioning
             const blockHeight = lines.length * LINE_HEIGHT;
@@ -324,14 +331,16 @@
             ctx.fillStyle = INK;
             
             let currentY = startY;
-            lines.forEach(lineText => {
-                const parsedWords = parseHighlighted(lineText);
+            lines.forEach(lineWords => {
+                // Calculate line width for centering
+                let lineText = lineWords.map(w => w.text).join(' ');
                 const lineW = ctx.measureText(lineText).width;
                 const lineX = CANVAS_SIZE / 2 - lineW / 2;
                 let x = lineX;
 
-                parsedWords.forEach(word => {
+                lineWords.forEach(word => {
                     const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
 
                     if (word.highlight) {
                         // Highlight background
@@ -343,7 +352,7 @@
                     ctx.fillStyle = INK;
                     ctx.font = `${FONT_SIZE}px Courier New, monospace`;
                     ctx.fillText(word.text, x, currentY);
-                    x += wordW + ctx.measureText(' ').width;
+                    x += wordW + spaceW;
                 });
 
                 currentY += LINE_HEIGHT;
