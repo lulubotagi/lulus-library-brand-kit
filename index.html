@@ -240,6 +240,10 @@
                 <button class="template-btn" data-template="yellow">Motivational Yellow</button>
                 <button class="template-btn" data-template="clean">Clean Mono</button>
                 <button class="template-btn" data-template="bold">Bold Accent</button>
+                <button class="template-btn" data-template="wildleft">Wild Left</button>
+                <button class="template-btn" data-template="stackedcolor">Stacked Color</button>
+                <button class="template-btn" data-template="gradientdream">Gradient Dream</button>
+                <button class="template-btn" data-template="playful">Playful Pop</button>
             </div>
 
             <div class="quote-generator">
@@ -849,6 +853,177 @@
             ctx.textAlign = 'left';
         }
 
+        // ===== TEMPLATE 8: WILD LEFT - LEFT ALIGNED BOLD =====
+        function renderWildLeft(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#2A2A2A';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            // Split into words and create dynamic lines
+            const words = text.replace(/\[|\]/g, '').split(/\s+/);
+            ctx.font = `bold 68px Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const lineHeight = 100;
+            let currentY = 120;
+            let currentLine = '';
+            const lines = [];
+
+            words.forEach(word => {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const w = ctx.measureText(testLine).width;
+                if (w > 700 && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            });
+            if (currentLine) lines.push(currentLine);
+
+            // Gradient colors for each line
+            const lineColors = ['#FF1493', '#FFD700', '#00CED1', '#FF6347', '#32CD32', '#9370DB'];
+            
+            lines.forEach((line, idx) => {
+                ctx.fillStyle = lineColors[idx % lineColors.length];
+                ctx.font = `bold 68px Georgia, serif`;
+                ctx.textAlign = 'left';
+                ctx.fillText(line, 80, currentY);
+                currentY += lineHeight;
+            });
+
+            // Footer
+            ctx.font = `18px Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'left';
+            ctx.fillText("Lulu's Library", 80, CANVAS_SIZE - 50);
+        }
+
+        // ===== TEMPLATE 9: STACKED COLOR - VERTICAL RAINBOW =====
+        function renderStackedColor(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFACD';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            const words = text.replace(/\[|\]/g, '').split(/\s+/);
+            ctx.font = `bold 85px Arial Black, sans-serif`;
+            ctx.textBaseline = 'top';
+
+            const colors = ['#E91E63', '#FF6F00', '#FFD700', '#00BCD4', '#2196F3', '#9C27B0', '#F44336', '#4CAF50'];
+            
+            let currentY = 150;
+            const lineHeight = 110;
+            let wordIdx = 0;
+
+            // Write 1-2 words per line
+            while (wordIdx < words.length) {
+                const word1 = words[wordIdx];
+                ctx.fillStyle = colors[wordIdx % colors.length];
+                ctx.font = `bold 85px Arial Black, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText(word1, CANVAS_SIZE / 2, currentY);
+                currentY += lineHeight;
+                wordIdx++;
+            }
+
+            // Footer
+            ctx.font = `20px Georgia, serif`;
+            ctx.fillStyle = '#666666';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 40);
+        }
+
+        // ===== TEMPLATE 10: GRADIENT DREAM - SOFT GRADIENT WITH BIG TEXT =====
+        function renderGradientDream(text) {
+            const ctx = canvas.getContext('2d');
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            gradient.addColorStop(0, '#FFB6D9');
+            gradient.addColorStop(0.5, '#C9AFF0');
+            gradient.addColorStop(1, '#A8E6CF');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            const words = text.replace(/\[|\]/g, '').split(/\s+/);
+            ctx.font = `bold 72px "Comic Sans MS", cursive`;
+            ctx.textBaseline = 'top';
+
+            let currentY = 200;
+            let currentLine = '';
+            const lines = [];
+
+            words.forEach(word => {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                const w = ctx.measureText(testLine).width;
+                if (w > 750 && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            });
+            if (currentLine) lines.push(currentLine);
+
+            lines.forEach(line => {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = `bold 72px "Comic Sans MS", cursive`;
+                ctx.textAlign = 'center';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetX = 3;
+                ctx.shadowOffsetY = 3;
+                ctx.fillText(line, CANVAS_SIZE / 2, currentY);
+                ctx.shadowColor = 'transparent';
+                currentY += 95;
+            });
+
+            // Footer
+            ctx.font = `18px Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 50);
+        }
+
+        // ===== TEMPLATE 11: PLAYFUL POP - SCATTERED WORDS WITH VARIED SIZES =====
+        function renderPlayful(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            const words = text.replace(/\[|\]/g, '').split(/\s+/);
+            const colors = ['#FF1493', '#FF6347', '#FFD700', '#00CED1', '#32CD32', '#9370DB', '#FF8C00'];
+            
+            // Scatter words across canvas with varying sizes
+            const positions = [
+                { x: 100, y: 150, size: 72 },
+                { x: 400, y: 220, size: 68 },
+                { x: 700, y: 180, size: 75 },
+                { x: 200, y: 400, size: 70 },
+                { x: 550, y: 480, size: 72 },
+                { x: 400, y: 650, size: 68 },
+                { x: 150, y: 800, size: 70 }
+            ];
+
+            ctx.textBaseline = 'top';
+
+            words.forEach((word, idx) => {
+                if (idx < positions.length) {
+                    const pos = positions[idx];
+                    ctx.fillStyle = colors[idx % colors.length];
+                    ctx.font = `bold ${pos.size}px Arial Black, sans-serif`;
+                    ctx.textAlign = 'left';
+                    ctx.fillText(word, pos.x, pos.y);
+                }
+            });
+
+            // Footer
+            ctx.font = `18px Georgia, serif`;
+            ctx.fillStyle = '#2D5016';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, CANVAS_SIZE - 40);
+        }
+
         // Main render function that calls the appropriate template
         function renderQuote(text) {
             switch(currentTemplate) {
@@ -859,6 +1034,10 @@
                 case 'yellow': renderYellow(text); break;
                 case 'clean': renderClean(text); break;
                 case 'bold': renderBoldAccent(text); break;
+                case 'wildleft': renderWildLeft(text); break;
+                case 'stackedcolor': renderStackedColor(text); break;
+                case 'gradientdream': renderGradientDream(text); break;
+                case 'playful': renderPlayful(text); break;
             }
         }
 
