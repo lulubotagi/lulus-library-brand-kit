@@ -56,8 +56,35 @@
             padding: 60px 40px;
         }
 
-        section {
-            margin-bottom: 80px;
+        .template-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .template-btn {
+            padding: 10px 20px;
+            border: 2px solid #E0E0E0;
+            background: white;
+            color: #264653;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .template-btn:hover {
+            border-color: #2D5016;
+            color: #2D5016;
+        }
+
+        .template-btn.active {
+            background: #2D5016;
+            color: white;
+            border-color: #2D5016;
         }
 
         h2 {
@@ -180,6 +207,15 @@
             main {
                 padding: 40px 20px;
             }
+
+            .template-tabs {
+                gap: 8px;
+            }
+
+            .template-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -195,13 +231,24 @@
     <main>
         <section id="quotable">
             <h2>Quotable Generator</h2>
+            
+            <div class="template-tabs" id="templateTabs">
+                <button class="template-btn active" data-template="minimal">Minimal Serif</button>
+                <button class="template-btn" data-template="rainbow">Rainbow Color</button>
+                <button class="template-btn" data-template="blackwhite">Bold B&W</button>
+                <button class="template-btn" data-template="colorful">Colorful Mix</button>
+                <button class="template-btn" data-template="yellow">Motivational Yellow</button>
+                <button class="template-btn" data-template="clean">Clean Mono</button>
+                <button class="template-btn" data-template="bold">Bold Accent</button>
+            </div>
+
             <div class="quote-generator">
                 <div class="quote-canvas-panel">
                     <canvas class="quote-canvas" id="quote-canvas" width="1080" height="1080"></canvas>
                 </div>
                 <div class="quote-controls">
                     <textarea id="quote-input" placeholder="Enter your quote here..."></textarea>
-                    <div class="quote-help">Wrap words in [brackets] to highlight them in forest green</div>
+                    <div class="quote-help">Wrap words in [brackets] to highlight them</div>
                     <div class="quote-buttons">
                         <button class="quote-btn quote-btn-primary" id="quote-generate">Generate</button>
                         <button class="quote-btn quote-btn-secondary" id="quote-download">Download PNG</button>
@@ -232,15 +279,7 @@
         const INK = "#2D2A28";
         const FOOTER_COLOR = "#A09690";
 
-        function hexToRgb(hex) {
-            hex = hex.lstrip('#');
-            return [
-                parseInt(hex.substring(0, 2), 16),
-                parseInt(hex.substring(2, 4), 16),
-                parseInt(hex.substring(4, 6), 16)
-            ];
-        }
-
+        let currentTemplate = 'minimal';
         const canvas = document.getElementById('quote-canvas');
         const input = document.getElementById('quote-input');
         const genBtn = document.getElementById('quote-generate');
@@ -278,23 +317,7 @@
             return words;
         }
 
-        function renderQuote(text) {
-            if (!canvas.getContext) return;
-            
-            const ctx = canvas.getContext('2d');
-            
-            // Background
-            ctx.fillStyle = BG_COLOR;
-            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-            // Fonts
-            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
-            ctx.textBaseline = 'top';
-
-            // Parse highlights FIRST, then wrap lines
-            const allWords = parseHighlighted(text);
-            
-            // Wrap lines while preserving highlight info
+        function wrapLines(allWords, ctx, maxWidth) {
             const lines = [];
             let line = [];
             let lineWidth = 0;
@@ -304,7 +327,7 @@
                 const spaceWidth = ctx.measureText(' ').width;
                 const testWidth = lineWidth + (line.length ? spaceWidth : 0) + wordWidth;
 
-                if (testWidth > MAX_TEXT_WIDTH && line.length > 0) {
+                if (testWidth > maxWidth && line.length > 0) {
                     lines.push(line);
                     line = [word];
                     lineWidth = wordWidth;
@@ -314,8 +337,20 @@
                 }
             });
             if (line.length > 0) lines.push(line);
+            return lines;
+        }
 
-            // Calculate positioning
+        // ===== TEMPLATE 1: MINIMAL SERIF =====
+        function renderMinimalSerif(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = BG_COLOR;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const allWords = parseHighlighted(text);
+            const lines = wrapLines(allWords, ctx, MAX_TEXT_WIDTH);
             const blockHeight = lines.length * LINE_HEIGHT;
             const startY = Math.round((CANVAS_SIZE - blockHeight) / 2 - CANVAS_SIZE * 0.03);
 
@@ -327,19 +362,17 @@
             const qmW = ctx.measureText(qm).width;
             ctx.fillText(qm, CANVAS_SIZE / 2 - qmW / 2, qmY);
 
-            // Body text
-            ctx.font = `${FONT_SIZE}px Courier New, monospace`;
-            ctx.fillStyle = INK;
-            
+            // Body text with continuous highlights
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
             let currentY = startY;
+
             lines.forEach(lineWords => {
-                // Calculate line width for centering
                 let lineText = lineWords.map(w => w.text).join(' ');
                 const lineW = ctx.measureText(lineText).width;
                 const lineX = CANVAS_SIZE / 2 - lineW / 2;
                 let x = lineX;
 
-                // First pass: draw highlight boxes for consecutive highlighted words
+                // Draw highlight boxes for consecutive highlighted words
                 let highlightStart = null;
                 let highlightStartX = 0;
 
@@ -353,9 +386,7 @@
                             highlightStartX = x;
                         }
                     } else {
-                        // End of highlight group - draw the box
                         if (highlightStart !== null) {
-                            // Calculate width of all highlighted words
                             let highlightWidth = 0;
                             for (let i = highlightStart; i < idx; i++) {
                                 highlightWidth += ctx.measureText(lineWords[i].text).width;
@@ -369,7 +400,6 @@
                     x += wordW + spaceW;
                 });
 
-                // Handle highlight at end of line
                 if (highlightStart !== null) {
                     let highlightWidth = 0;
                     for (let i = highlightStart; i < lineWords.length; i++) {
@@ -380,13 +410,11 @@
                     ctx.fillRect(highlightStartX - 8, currentY - 8, highlightWidth + 16, LINE_HEIGHT - 16);
                 }
 
-                // Second pass: draw text
+                // Draw text
                 x = lineX;
                 lineWords.forEach(word => {
                     const wordW = ctx.measureText(word.text).width;
                     const spaceW = ctx.measureText(' ').width;
-
-                    // Text
                     ctx.fillStyle = INK;
                     ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
                     ctx.fillText(word.text, x, currentY);
@@ -396,19 +424,16 @@
                 currentY += LINE_HEIGHT;
             });
 
-            // Footer divider
+            // Footer
             const footerY = CANVAS_SIZE - Math.round(CANVAS_SIZE * 0.06);
             const lineY = footerY - Math.round(CANVAS_SIZE * 0.02);
             const lineHalf = Math.round(CANVAS_SIZE * 0.08);
-
             ctx.strokeStyle = FOREST_GREEN;
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(CANVAS_SIZE / 2 - lineHalf, lineY);
             ctx.lineTo(CANVAS_SIZE / 2 + lineHalf, lineY);
             ctx.stroke();
-
-            // Footer text
             ctx.font = `${BRAND_FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
             ctx.fillStyle = FOOTER_COLOR;
             ctx.textAlign = 'center';
@@ -416,14 +441,439 @@
             ctx.textAlign = 'left';
         }
 
-        input.addEventListener('input', () => {
-            renderQuote(input.value);
+        // ===== TEMPLATE 2: RAINBOW MULTICOLOR =====
+        function renderRainbow(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = BG_COLOR;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const colors = ['#E74C3C', '#E67E22', '#F39C12', '#2D5016', '#3498DB', '#9B59B6', '#E91E63'];
+            const allWords = parseHighlighted(text).map(w => ({ ...w, highlight: false })); // Ignore brackets
+            const lines = wrapLines(allWords, ctx, MAX_TEXT_WIDTH);
+            const blockHeight = lines.length * LINE_HEIGHT;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2 - CANVAS_SIZE * 0.03);
+
+            // Quotation mark
+            ctx.font = `${QUOTE_MARK_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = FOREST_GREEN;
+            const qmY = startY - Math.round(CANVAS_SIZE * 0.1);
+            const qm = '\u201C';
+            const qmW = ctx.measureText(qm).width;
+            ctx.fillText(qm, CANVAS_SIZE / 2 - qmW / 2, qmY);
+
+            // Body text - each word different color
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            let wordIndex = 0;
+            let currentY = startY;
+
+            lines.forEach(lineWords => {
+                let lineText = lineWords.map(w => w.text).join(' ');
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
+
+                lineWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+                    ctx.fillStyle = colors[wordIndex % colors.length];
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + spaceW;
+                    wordIndex++;
+                });
+
+                currentY += LINE_HEIGHT;
+            });
+
+            // Footer
+            const footerY = CANVAS_SIZE - Math.round(CANVAS_SIZE * 0.06);
+            const lineY = footerY - Math.round(CANVAS_SIZE * 0.02);
+            const lineHalf = Math.round(CANVAS_SIZE * 0.08);
+            ctx.strokeStyle = FOREST_GREEN;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(CANVAS_SIZE / 2 - lineHalf, lineY);
+            ctx.lineTo(CANVAS_SIZE / 2 + lineHalf, lineY);
+            ctx.stroke();
+            ctx.font = `${BRAND_FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = FOOTER_COLOR;
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        // ===== TEMPLATE 3: BOLD BLACK & WHITE =====
+        function renderBlackWhite(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `56px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const allWords = parseHighlighted(text);
+            const lines = wrapLines(allWords, ctx, MAX_TEXT_WIDTH);
+            const blockHeight = lines.length * 80;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2);
+
+            // Quotation mark
+            ctx.font = `${QUOTE_MARK_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            const qmY = startY - Math.round(CANVAS_SIZE * 0.1);
+            const qm = '\u201C';
+            const qmW = ctx.measureText(qm).width;
+            ctx.fillText(qm, CANVAS_SIZE / 2 - qmW / 2, qmY);
+
+            // Body text - white with highlights
+            ctx.font = `56px "Cormorant Garamond", Georgia, serif`;
+            let currentY = startY;
+
+            lines.forEach(lineWords => {
+                let lineText = lineWords.map(w => w.text).join(' ');
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
+
+                // Highlight boxes
+                let highlightStart = null;
+                let highlightStartX = 0;
+
+                lineWords.forEach((word, idx) => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+
+                    if (word.highlight) {
+                        if (highlightStart === null) {
+                            highlightStart = idx;
+                            highlightStartX = x;
+                        }
+                    } else {
+                        if (highlightStart !== null) {
+                            let highlightWidth = 0;
+                            for (let i = highlightStart; i < idx; i++) {
+                                highlightWidth += ctx.measureText(lineWords[i].text).width;
+                                if (i < idx - 1) highlightWidth += ctx.measureText(' ').width;
+                            }
+                            ctx.fillStyle = FOREST_GREEN;
+                            ctx.fillRect(highlightStartX - 8, currentY - 8, highlightWidth + 16, 80 - 16);
+                            highlightStart = null;
+                        }
+                    }
+                    x += wordW + spaceW;
+                });
+
+                if (highlightStart !== null) {
+                    let highlightWidth = 0;
+                    for (let i = highlightStart; i < lineWords.length; i++) {
+                        highlightWidth += ctx.measureText(lineWords[i].text).width;
+                        if (i < lineWords.length - 1) highlightWidth += ctx.measureText(' ').width;
+                    }
+                    ctx.fillStyle = FOREST_GREEN;
+                    ctx.fillRect(highlightStartX - 8, currentY - 8, highlightWidth + 16, 80 - 16);
+                }
+
+                // Draw text
+                x = lineX;
+                lineWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = `56px "Cormorant Garamond", Georgia, serif`;
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + spaceW;
+                });
+
+                currentY += 80;
+            });
+
+            // Footer
+            const footerY = CANVAS_SIZE - 60;
+            ctx.font = `${BRAND_FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = '#999999';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        // ===== TEMPLATE 4: COLORFUL MIX =====
+        function renderColorful(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = BG_COLOR;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const highlightColors = ['#FF1493', '#FFB347', '#87CEEB', '#2D5016', '#FFD700'];
+            const allWords = parseHighlighted(text);
+            const lines = wrapLines(allWords, ctx, MAX_TEXT_WIDTH);
+            const blockHeight = lines.length * LINE_HEIGHT;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2 - CANVAS_SIZE * 0.03);
+
+            // Quotation mark
+            ctx.font = `${QUOTE_MARK_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = FOREST_GREEN;
+            const qmY = startY - Math.round(CANVAS_SIZE * 0.1);
+            const qm = '\u201C';
+            const qmW = ctx.measureText(qm).width;
+            ctx.fillText(qm, CANVAS_SIZE / 2 - qmW / 2, qmY);
+
+            // Body text
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            let highlightIndex = 0;
+            let currentY = startY;
+
+            lines.forEach(lineWords => {
+                let lineText = lineWords.map(w => w.text).join(' ');
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
+
+                // Draw highlights and text
+                let highlightStart = null;
+                let highlightStartX = 0;
+                let currentHighlightColor = null;
+
+                lineWords.forEach((word, idx) => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+
+                    if (word.highlight) {
+                        if (highlightStart === null) {
+                            highlightStart = idx;
+                            highlightStartX = x;
+                            currentHighlightColor = highlightColors[highlightIndex % highlightColors.length];
+                            highlightIndex++;
+                        }
+                    } else {
+                        if (highlightStart !== null) {
+                            let highlightWidth = 0;
+                            for (let i = highlightStart; i < idx; i++) {
+                                highlightWidth += ctx.measureText(lineWords[i].text).width;
+                                if (i < idx - 1) highlightWidth += ctx.measureText(' ').width;
+                            }
+                            ctx.fillStyle = currentHighlightColor + '40';
+                            ctx.fillRect(highlightStartX - 8, currentY - 8, highlightWidth + 16, LINE_HEIGHT - 16);
+                            highlightStart = null;
+                        }
+                    }
+                    x += wordW + spaceW;
+                });
+
+                if (highlightStart !== null) {
+                    let highlightWidth = 0;
+                    for (let i = highlightStart; i < lineWords.length; i++) {
+                        highlightWidth += ctx.measureText(lineWords[i].text).width;
+                        if (i < lineWords.length - 1) highlightWidth += ctx.measureText(' ').width;
+                    }
+                    ctx.fillStyle = currentHighlightColor + '40';
+                    ctx.fillRect(highlightStartX - 8, currentY - 8, highlightWidth + 16, LINE_HEIGHT - 16);
+                }
+
+                // Draw text
+                x = lineX;
+                lineWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+                    ctx.fillStyle = INK;
+                    ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + spaceW;
+                });
+
+                currentY += LINE_HEIGHT;
+            });
+
+            // Footer
+            const footerY = CANVAS_SIZE - Math.round(CANVAS_SIZE * 0.06);
+            const lineY = footerY - Math.round(CANVAS_SIZE * 0.02);
+            const lineHalf = Math.round(CANVAS_SIZE * 0.08);
+            ctx.strokeStyle = FOREST_GREEN;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(CANVAS_SIZE / 2 - lineHalf, lineY);
+            ctx.lineTo(CANVAS_SIZE / 2 + lineHalf, lineY);
+            ctx.stroke();
+            ctx.font = `${BRAND_FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = FOOTER_COLOR;
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        // ===== TEMPLATE 5: MOTIVATIONAL YELLOW =====
+        function renderYellow(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFD966';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `60px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const allWords = parseHighlighted(text);
+            const lines = wrapLines(allWords, ctx, MAX_TEXT_WIDTH);
+            const blockHeight = lines.length * 85;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2);
+
+            // Body text - bold black
+            ctx.font = `60px "Cormorant Garamond", Georgia, serif`;
+            let currentY = startY;
+
+            lines.forEach(lineWords => {
+                let lineText = lineWords.map(w => w.text).join(' ');
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
+
+                lineWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+
+                    if (word.highlight) {
+                        ctx.fillStyle = FOREST_GREEN;
+                    } else {
+                        ctx.fillStyle = '#000000';
+                    }
+
+                    ctx.font = `60px "Cormorant Garamond", Georgia, serif`;
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + spaceW;
+                });
+
+                currentY += 85;
+            });
+
+            // Footer
+            const footerY = CANVAS_SIZE - 60;
+            ctx.font = `20px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = '#666666';
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        // ===== TEMPLATE 6: CLEAN MONO =====
+        function renderClean(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const allWords = parseHighlighted(text);
+            const lines = wrapLines(allWords, ctx, MAX_TEXT_WIDTH);
+            const blockHeight = lines.length * LINE_HEIGHT;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2 - CANVAS_SIZE * 0.03);
+
+            // Body text
+            ctx.font = `${FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            let currentY = startY;
+
+            lines.forEach(lineWords => {
+                let lineText = lineWords.map(w => w.text).join(' ');
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
+
+                lineWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+                    ctx.fillStyle = '#000000';
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + spaceW;
+                });
+
+                currentY += LINE_HEIGHT;
+            });
+
+            // Footer
+            const footerY = CANVAS_SIZE - 80;
+            ctx.font = `${BRAND_FONT_SIZE}px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = FOREST_GREEN;
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        // ===== TEMPLATE 7: BOLD ACCENT =====
+        function renderBoldAccent(text) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = BG_COLOR;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.font = `72px "Cormorant Garamond", Georgia, serif`;
+            ctx.textBaseline = 'top';
+
+            const allWords = parseHighlighted(text);
+            const lines = wrapLines(allWords, ctx, CANVAS_SIZE - 100);
+            const blockHeight = lines.length * 95;
+            const startY = Math.round((CANVAS_SIZE - blockHeight) / 2);
+
+            // Body text - bold with green highlights
+            ctx.font = `72px "Cormorant Garamond", Georgia, serif`;
+            let currentY = startY;
+
+            lines.forEach(lineWords => {
+                let lineText = lineWords.map(w => w.text).join(' ');
+                const lineW = ctx.measureText(lineText).width;
+                const lineX = CANVAS_SIZE / 2 - lineW / 2;
+                let x = lineX;
+
+                lineWords.forEach(word => {
+                    const wordW = ctx.measureText(word.text).width;
+                    const spaceW = ctx.measureText(' ').width;
+
+                    if (word.highlight) {
+                        ctx.fillStyle = FOREST_GREEN;
+                    } else {
+                        ctx.fillStyle = '#000000';
+                    }
+
+                    ctx.font = `72px "Cormorant Garamond", Georgia, serif`;
+                    ctx.fillText(word.text, x, currentY);
+                    x += wordW + spaceW;
+                });
+
+                currentY += 95;
+            });
+
+            // Footer
+            const footerY = CANVAS_SIZE - 70;
+            ctx.font = `20px "Cormorant Garamond", Georgia, serif`;
+            ctx.fillStyle = FOOTER_COLOR;
+            ctx.textAlign = 'center';
+            ctx.fillText("Lulu's Library", CANVAS_SIZE / 2, footerY);
+            ctx.textAlign = 'left';
+        }
+
+        // Main render function that calls the appropriate template
+        function renderQuote(text) {
+            switch(currentTemplate) {
+                case 'minimal': renderMinimalSerif(text); break;
+                case 'rainbow': renderRainbow(text); break;
+                case 'blackwhite': renderBlackWhite(text); break;
+                case 'colorful': renderColorful(text); break;
+                case 'yellow': renderYellow(text); break;
+                case 'clean': renderClean(text); break;
+                case 'bold': renderBoldAccent(text); break;
+            }
+        }
+
+        // Template selector
+        document.getElementById('templateTabs').addEventListener('click', (e) => {
+            if (e.target.classList.contains('template-btn')) {
+                document.querySelectorAll('.template-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentTemplate = e.target.dataset.template;
+                renderQuote(input.value);
+            }
         });
 
-        genBtn.addEventListener('click', () => {
-            renderQuote(input.value);
-        });
-
+        input.addEventListener('input', () => renderQuote(input.value));
+        genBtn.addEventListener('click', () => renderQuote(input.value));
         dlBtn.addEventListener('click', () => {
             const link = document.createElement('a');
             link.download = 'lulus-quote.png';
